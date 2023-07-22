@@ -69,12 +69,34 @@ local function select_random_function_by_weight(array)
     end
 end
 
+-- Selects a random element from a table of elements based on their weights.
+--
+-- @param array The array of elements to select from.
+-- @return The selected element.
+--
+local function select_random_first_element_from_tuple_by_weight(table)
+    local total_weight = 0
+    for _, data in ipairs(table) do
+        total_weight = total_weight + data[2]
+    end
+
+    local random_number = math.random(0, total_weight)
+
+    for _, data in ipairs(table) do
+        random_number = random_number - data[2]
+        if random_number <= 0 then
+            return data[1]
+        end
+    end
+end
+
 
 local math = {
     shuffle = shuffle;
     coord_to_string = coord_to_string;
     get_cell_by_position = get_cell_by_position;
     select_random_by_weight = select_random_function_by_weight;
+    select_random_first_element_from_tuple_by_weight = select_random_first_element_from_tuple_by_weight;
 }
 
 return math;

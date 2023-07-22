@@ -2,6 +2,7 @@ local kustom_maf = require("core.utils.math")
 local map_config = require("core.config.config")
 local cell_helper = require("core.helpers.cell_helper")
 local rocks_yield_ore = require("core.features.rocks_yield_ore")
+local gui = require("core.gui.gui")
 
 ------------------------------------------------------------------------------------
 
@@ -11,9 +12,9 @@ local function on_init(event)
 
     remote.call("freeplay", "set_disable_crashsite", true)
     remote.call("freeplay", "set_skip_intro", true)
-    game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 }, game.surfaces
-    .nauvis)
+    game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 }, game.surfaces.nauvis)
 
+    map_config.on_init()
     rocks_yield_ore.on_init()
 end
 
@@ -63,6 +64,12 @@ local function on_entity_died(entity)
     rocks_yield_ore.on_entity_died(entity)
 end
 
+local function on_tick(event)
+    if game.tick % 300 == 0 then
+        gui.refresh_gui()
+    end
+end
+
 local map_helper = {
     on_init = on_init,
     on_configuration_changed = on_configuration_changed,
@@ -70,6 +77,7 @@ local map_helper = {
     on_player_changed_position = on_player_changed_position,
     on_player_mined_entity = on_player_mined_entity,
     on_entity_died = on_entity_died,
+    on_tick = on_tick
 }
 
 return map_helper;

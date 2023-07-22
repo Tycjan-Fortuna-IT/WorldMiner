@@ -3,6 +3,7 @@ local math_random = math.random
 local math_floor = math.floor
 local math_sqrt = math.sqrt
 
+local config = require('core.config.config')
 local gui = require('core.gui.gui')
 
 local rock_yield = {
@@ -25,28 +26,9 @@ local particles = {
     ['angels-ore6'] = 'iron-ore-particle'
 }
 
-local function get_chances()
-    local chances = {}
-
-    if game.entity_prototypes['angels-ore1'] then
-        for i = 1, 6, 1 do
-            table.insert(chances, {'angels-ore' .. i, 1})
-        end
-        table.insert(chances, {'coal', 2})
-        return chances
-    end
-
-    table.insert(chances, {'iron-ore', 25})
-    table.insert(chances, {'copper-ore', 17})
-    table.insert(chances, {'coal', 13})
-    table.insert(chances, {'uranium-ore', 2})
-
-    return chances
-end
-
 local function set_raffle()
     global.rocks_yield_ore['raffle'] = {}
-    for _, t in pairs(get_chances()) do
+    for _, t in pairs(config.ore_raffle) do
         for _ = 1, t[2], 1 do
             table.insert(global.rocks_yield_ore['raffle'], t[1])
         end
@@ -154,8 +136,6 @@ local function on_player_mined_entity(event)
     else
         player.surface.spill_item_stack(position, {name = 'stone', count = stone_amount}, true)
     end
-
-    gui.refresh_gui()
 end
 
 local function on_entity_died(event)

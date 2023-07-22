@@ -10,27 +10,27 @@ local function create_cave_miner_stats_gui(player)
     local caption_style = {
         {'font', 'default-bold'},
         {'font_color', {r = 0.63, g = 0.63, b = 0.63}},
-        {'top_padding', 2},
-        {'left_padding', 0},
-        {'right_padding', 0},
+        {'top_padding', 4},
+        {'left_padding', 4},
+        {'right_padding', 4},
         {'minimal_width', 0}
     }
     local stat_numbers = {}
     local stat_number_style = {
         {'font', 'default-bold'},
         {'font_color', {r = 0.77, g = 0.77, b = 0.77}},
-        {'top_padding', 2},
-        {'left_padding', 0},
-        {'right_padding', 0},
+        {'top_padding', 4},
+        {'left_padding', 4},
+        {'right_padding', 4},
         {'minimal_width', 0}
     }
     local separators = {}
     local separator_style = {
         {'font', 'default-bold'},
         {'font_color', {r = 0.15, g = 0.15, b = 0.89}},
-        {'top_padding', 2},
-        {'left_padding', 2},
-        {'right_padding', 2},
+        {'top_padding', 4},
+        {'left_padding', 4},
+        {'right_padding', 4},
         {'minimal_width', 0}
     }
 
@@ -39,15 +39,15 @@ local function create_cave_miner_stats_gui(player)
     local t = frame.add {type = 'table', column_count = 11}
 
     captions[1] = t.add {type = 'label', caption = 'Ores mined:'}
-
     stat_numbers[1] = t.add {type = 'label', caption = global.rocks_yield_ore['ores_mined']}
-
     separators[1] = t.add {type = 'label', caption = '|'}
 
     captions[2] = t.add {type = 'label', caption = 'Rocks broken:'}
     stat_numbers[2] = t.add {type = 'label', caption = global.rocks_yield_ore['rocks_broken']}
-
     separators[2] = t.add {type = 'label', caption = '|'}
+
+    captions[3] = t.add {type = 'label', caption = 'Discovered cells:'}
+    stat_numbers[3] = t.add {type = 'label', caption = global.discovered_cells}
 
     for _, s in pairs(caption_style) do
         for _, l in pairs(captions) do
@@ -66,6 +66,7 @@ local function create_cave_miner_stats_gui(player)
     end
     stat_numbers[1].style.minimal_width = 9 * string.len(tostring(global.rocks_yield_ore['ores_mined']))
     stat_numbers[2].style.minimal_width = 9 * string.len(tostring(global.rocks_yield_ore['rocks_broken']))
+    stat_numbers[3].style.minimal_width = 9 * string.len(tostring(global.discovered_cells))
 end
 
 local function refresh_gui()
