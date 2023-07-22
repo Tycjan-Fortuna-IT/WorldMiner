@@ -48,10 +48,33 @@ local function get_cell_by_position(pos)
     return {x = x, y = y}
 end
 
+-- Selects a random function from an array of functions based on their weights.
+--
+-- @param array The array of functions to select from.
+-- @return The selected function.
+--
+local function select_random_function_by_weight(array)
+    local total_weight = 0
+    for _, data in ipairs(array) do
+        total_weight = total_weight + data.weight
+    end
+
+    local random_number = math.random(0, total_weight)
+
+    for _, data in ipairs(array) do
+        random_number = random_number - data.weight
+        if random_number <= 0 then
+            return data.func
+        end
+    end
+end
+
+
 local math = {
     shuffle = shuffle;
     coord_to_string = coord_to_string;
     get_cell_by_position = get_cell_by_position;
+    select_random_by_weight = select_random_function_by_weight;
 }
 
 return math;

@@ -102,7 +102,6 @@ local function get_amount(entity)
 end
 
 local function on_player_mined_entity(event)
-    game.print(global.rocks_yield_ore_base_amount)
     local entity = event.entity
     if not entity.valid then
         return

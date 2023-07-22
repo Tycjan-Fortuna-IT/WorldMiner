@@ -7,11 +7,11 @@ local rocks_yield_ore = require("core.features.rocks_yield_ore")
 
 local function on_init(event)
     global.map_cells = {}
-    global.map_depth = 0
+    global.discovered_cells = 0
 
     remote.call("freeplay", "set_disable_crashsite", true)
     remote.call("freeplay", "set_skip_intro", true)
-    game.forces['player'].set_spawn_position({ map_config.grid_size / 2, map_config.grid_size / 2 }, game.surfaces
+    game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 }, game.surfaces
     .nauvis)
 
     rocks_yield_ore.on_init()
