@@ -1,8 +1,9 @@
---destroying and mining rocks yields ore -- load as last module
 local max_spill = 60
 local math_random = math.random
 local math_floor = math.floor
 local math_sqrt = math.sqrt
+
+local gui = require('core.gui.gui')
 
 local rock_yield = {
     ['rock-big'] = 1,
@@ -154,48 +155,51 @@ local function on_player_mined_entity(event)
     else
         player.surface.spill_item_stack(position, {name = 'stone', count = stone_amount}, true)
     end
+
+    gui.refresh_gui()
 end
 
--- local function on_entity_died(event)
---     local entity = event.entity
---     if not entity.valid then
---         return
---     end
---     if not rock_yield[entity.name] then
---         return
---     end
+local function on_entity_died(event)
+    local entity = event.entity
+    if not entity.valid then
+        return
+    end
+    if not rock_yield[entity.name] then
+        return
+    end
 
---     local surface = entity.surface
---     local ore = global.rocks_yield_ore['raffle'][math_random(1, global.rocks_yield_ore['size_of_raffle'])]
---     local pos = {entity.position.x, entity.position.y}
---     create_particles(surface, particles[ore], pos, 16, false)
+    local surface = entity.surface
+    local ore = global.rocks_yield_ore['raffle'][math_random(1, global.rocks_yield_ore['size_of_raffle'])]
+    local pos = {entity.position.x, entity.position.y}
+    create_particles(surface, particles[ore], pos, 16, false)
 
---     if event.cause then
---         if event.cause.valid then
---             if event.cause.force.index == 2 or event.cause.force.index == 3 then
---                 entity.destroy()
---                 return
---             end
---         end
---     end
+    if event.cause then
+        if event.cause.valid then
+            if event.cause.force.index == 2 or event.cause.force.index == 3 then
+                entity.destroy()
+                return
+            end
+        end
+    end
 
---     entity.destroy()
+    entity.destroy()
 
---     local count = math_random(6, 9)
---     global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
---     surface.spill_item_stack(pos, {name = ore, count = count}, true)
+    local count = math_random(6, 9)
+    global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
+    surface.spill_item_stack(pos, {name = ore, count = count}, true)
 
---     count = math_random(1, 3)
---     global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
---     surface.spill_item_stack(pos, {name = 'stone', count = math_random(1, 3)}, true)
+    count = math_random(1, 3)
+    global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
+    surface.spill_item_stack(pos, {name = 'stone', count = math_random(1, 3)}, true)
 
---     global.rocks_yield_ore['rocks_broken'] = global.rocks_yield_ore['rocks_broken'] + 1
--- end
+    global.rocks_yield_ore['rocks_broken'] = global.rocks_yield_ore['rocks_broken'] + 1
+end
 
 local function on_init()
     global.rocks_yield_ore = {}
     global.rocks_yield_ore['rocks_broken'] = 0
     global.rocks_yield_ore['ores_mined'] = 0
+
     set_raffle()
 
     if not global.rocks_yield_ore_distance_modifier then
@@ -218,8 +222,8 @@ end
 local rocks_yield_ore = {
     on_init = on_init,
     on_configuration_changed = on_configuration_changed,
-    on_player_mined_entity = on_player_mined_entity
-    -- on_entity_died = on_entity_died
+    on_player_mined_entity = on_player_mined_entity,
+    on_entity_died = on_entity_died
 }
 
 return rocks_yield_ore
