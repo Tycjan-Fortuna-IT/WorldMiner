@@ -19,6 +19,11 @@ local function shuffle(table)
     return table
 end
 
+-- Converts a coordinate pair to a string.
+--
+-- @param pos The coordinate pair to be converted to a string.
+-- @return The string representation of the given coordinate pair.
+--
 local function coord_to_string(pos)
     local x = pos[1]
     local y = pos[2]
