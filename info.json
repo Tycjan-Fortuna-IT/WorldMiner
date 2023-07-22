@@ -1,0 +1,12 @@
+{
+  "name": "WorldMiner",
+  "version": "0.1.1",
+  "title": "WorldMiner",
+  "author": "Xp1000",
+  "homepage": "https://mods.factorio.com/user/Xp1000",
+  "factorio_version": "1.1",
+  "dependencies": [
+    "base >= 1.1.0"
+  ],
+  "description": "Todo."
+}
