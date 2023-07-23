@@ -6,7 +6,7 @@ local coin_yield = {
 
 local function on_player_mined_entity(event)
     if coin_yield[event.entity.name] then
-        local amount = math.random(math.ceil(coin_yield[event.entity.name] * 0.5), math.ceil(coin_yield[event.entity.name] * 2))
+        local amount = math.random(math.ceil(coin_yield[event.entity.name] * 0.5), math.ceil(coin_yield[event.entity.name] * 3))
 
         event.entity.surface.spill_item_stack(
             event.entity.position,

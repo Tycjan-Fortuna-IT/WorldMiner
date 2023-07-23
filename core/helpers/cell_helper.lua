@@ -17,15 +17,15 @@ local function get_chunk_position(position)
     position.x = math.floor(position.x, 0)
     position.y = math.floor(position.y, 0)
 
-    for x = 0, 31, 1 do
-        if (position.x - x) % 32 == 0 then
-            chunk_position.x = (position.x - x) / 32
+    for x = 0, config.grid_size - 1, 1 do
+        if (position.x - x) % config.grid_size == 0 then
+            chunk_position.x = (position.x - x) / config.grid_size
         end
     end
 
-    for y = 0, 31, 1 do
-        if (position.y - y) % 32 == 0 then
-            chunk_position.y = (position.y - y) / 32
+    for y = 0, config.grid_size - 1, 1 do
+        if (position.y - y) % config.grid_size == 0 then
+            chunk_position.y = (position.y - y) / config.grid_size
         end
     end
 
@@ -71,8 +71,8 @@ local function draw_cell_by_coords(cell_coords)
 end
 
 local function draw_starting_cell(surface, left_top)
-    for x = 0, 31, 1 do
-        for y = 0, 31, 1 do
+    for x = 0, config.grid_size - 1, 1 do
+        for y = 0, config.grid_size - 1, 1 do
             local tile_name = config.void_tile
 
             if x < config.grid_size and y < config.grid_size then
@@ -93,6 +93,7 @@ local function draw_starting_cell(surface, left_top)
 
     global.map_cells[utils.coord_to_string({ 0, 0 })].visited = true
 end
+
 
 local cell_helper = {
     draw_cell_by_coords = draw_cell_by_coords,

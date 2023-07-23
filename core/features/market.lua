@@ -68,20 +68,18 @@ market.on_market_item_purchased = function(event)
 
     local count = event.count
 
-    for i = 1, count do
-        if offer_index == 1 and Constants.pickaxe_tiers[global.player_stats[event.player_index].pickaxe_tier + 1] then
-            m.force.play_sound({ path = 'utility/new_objective', volume_modifier = 0.75 })
-    
-            global.player_stats[event.player_index].pickaxe_tier = global.player_stats[event.player_index].pickaxe_tier + 1
-    
-            Functions.set_mining_speed(player, player.force)
+    if offer_index == 1 and Constants.pickaxe_tiers[global.player_stats[event.player_index].pickaxe_tier + 1] then
+        m.force.play_sound({ path = 'utility/new_objective', volume_modifier = 0.75 })
 
-            market.refresh_offer(m, player, offer_index)
-    
-            game.print('Pickaxe has been upgraded to: ' .. Constants.pickaxe_tiers[global.player_stats[event.player_index].pickaxe_tier] .. '!')
-        else
-            game.print('Pickaxe is at maximum tier! Further upgrades are not possible and will not do anything! Dont waste money!')
-        end
+        global.player_stats[event.player_index].pickaxe_tier = global.player_stats[event.player_index].pickaxe_tier + 1
+
+        Functions.set_mining_speed(player, player.force)
+
+        market.refresh_offer(m, player, offer_index)
+
+        game.print('Pickaxe has been upgraded to: ' .. Constants.pickaxe_tiers[global.player_stats[event.player_index].pickaxe_tier] .. '!')
+    else
+        game.print('Pickaxe is at maximum tier! Further upgrades are not possible and will not do anything! Dont waste money!')
     end
 end
 

@@ -24,6 +24,7 @@ local function on_init(event)
     rocks_yield_ore.on_init()
 end
 
+-- without support for custom grid size
 local function on_chunk_generated(event)
     local surface = event.surface
     local left_top = event.area.left_top
@@ -39,13 +40,52 @@ local function on_chunk_generated(event)
         return
     end
 
+    local tiles = {}
+
     for x = 0, 31, 1 do
         for y = 0, 31, 1 do
-            local p = { x = left_top.x + x, y = left_top.y + y }
-            surface.set_tiles({ { name = map_config.void_tile, position = p } }, true)
+            tiles[#tiles + 1] = { name = map_config.void_tile, position = { x = left_top.x + x, y = left_top.y + y } }
         end
     end
+
+    surface.set_tiles(tiles)
 end
+
+-- with support for custom grid size
+-- local function on_chunk_generated(event)
+--     local surface = event.surface
+--     local area = event.area
+--     local left_top = area.left_top
+--     local right_bottom = { x = area.right_bottom.x + config.grid_size, y = area.right_bottom.y + config.grid_size }
+
+--     local grid_size = config.grid_size
+--     local void_tile_name = 
+
+    
+--     local center_x = grid_size / 2
+--     local center_y = grid_size / 2
+
+--     if left_top.x == 0 and left_top.y == 0 then
+--         cell_helper.draw_starting_cell(surface, left_top)
+--         market.build({ center_x, center_y })
+--         return
+--     end
+
+--     local tiles = {}
+--     local base_tile_count = 0
+--     for x = left_top.x, right_bottom.x, 1 do
+--         for y = left_top.y, right_bottom.y, 1 do
+--             local p = { x = x, y = y }
+--             if x < center_x - grid_size / 2 or x >= center_x + grid_size / 2 or
+--                 y < center_y - grid_size / 2 or y >= center_y + grid_size / 2 then
+--                 tiles[#tiles + 1] = { name = map_config.void_tile, position = p }
+--             end
+--         end
+--     end
+
+--     surface.set_tiles(tiles)
+-- end
+
 
 local function on_player_changed_position(event)
     local player = game.players[event.player_index]
