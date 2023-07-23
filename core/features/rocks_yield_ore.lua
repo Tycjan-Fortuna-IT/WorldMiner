@@ -110,8 +110,6 @@ local function on_player_mined_entity(event)
     player.surface.create_entity({ name = 'flying-text', position = position,
         text = '+' .. ore_amount .. ' [img=item/' .. ore .. ']', color = { r = 200, g = 160, b = 30 } })
     create_particles(player.surface, particles[ore], position, 64, { x = player.position.x, y = player.position.y })
-
-    player.surface.spill_item_stack(position, { name = 'coin', count = rock_yield[entity.name] + math.random(1, 2) }, true)
     
     entity.destroy()
 

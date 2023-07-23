@@ -90,6 +90,27 @@ local function select_random_first_element_from_tuple_by_weight(table)
     end
 end
 
+-- Selects a random element from a table of elements based on their weights.
+--
+-- @param array The array of elements to select from.
+-- @return The selected element.
+--
+local function select_random_element_from_table_by_weight(table)
+    local total_weight = 0
+    for _, data in ipairs(table) do
+        total_weight = total_weight + data.weight
+    end
+
+    local random_number = math.random(0, total_weight)
+
+    for _, data in ipairs(table) do
+        random_number = random_number - data.weight
+        if random_number <= 0 then
+            return data
+        end
+    end
+end
+
 -- Generates the price of a pickaxe tier based on its index.
 --
 -- @param tier_index The index of the pickaxe tier.
@@ -105,6 +126,67 @@ local function generate_pickaxe_tier_price(tier_index)
     return price
 end
 
+-- Adjusts the weight of a room based on the number of discovered rooms.
+--
+-- @param weight The base weight of the room.
+-- @param min_discovered_rooms The minimum number of rooms that must be discovered before this room can appear.
+-- @return The adjusted weight of the room.
+--
+local function adjust_weight_based_on_discovered_rooms(weight, min_discovered_rooms)
+    if global.discovered_cells < min_discovered_rooms then
+        return 0  -- Set weight to 0 for rooms that should not appear until a certain number of rooms are discovered
+    else
+        local base_weight = weight * 10  -- Adjust the multiplier value as needed
+        local weight_adjustment = 1 + ((global.discovered_cells - min_discovered_rooms) / 100)
+        return base_weight * weight_adjustment
+    end
+end
+
+-- Selects a random room from a table of rooms based on their weights.
+--
+-- @param rooms The table of rooms to select from.
+-- @return The selected room.
+--
+local function select_random_room_based_on_weight(rooms)
+    local total_weight = 0
+
+    -- Calculate the total weight
+    for _, room_data in ipairs(rooms) do
+        total_weight = total_weight + adjust_weight_based_on_discovered_rooms(room_data.weight, room_data.min_discovered_rooms)
+    end
+
+    -- Randomly select a room based on the adjusted weight
+    local random_value = math.random() * total_weight
+    local selected_room
+
+    for _, room_data in ipairs(rooms) do
+        local adjusted_weight = adjust_weight_based_on_discovered_rooms(room_data.weight, room_data.min_discovered_rooms)
+        if random_value <= adjusted_weight then
+            selected_room = room_data.func
+            break
+        end
+        random_value = random_value - adjusted_weight
+    end
+
+    return selected_room
+end
+
+-- Selects a random fluid from a table of fluids that have not yet been placed.
+--
+-- @param tbl The table of fluids to select from.
+-- @return The selected fluid.
+--
+local function select_fluids_not_yet_placed(tbl)
+    local fluids_not_yet_placed = {}
+
+    for _, fluid in ipairs(tbl) do
+        if not global.fluids_placed[fluid.name] then
+            table.insert(fluids_not_yet_placed, fluid)
+        end
+    end
+
+    return fluids_not_yet_placed
+end
 
 local math = {
     shuffle = shuffle,
@@ -113,6 +195,9 @@ local math = {
     select_random_by_weight = select_random_function_by_weight,
     select_random_first_element_from_tuple_by_weight = select_random_first_element_from_tuple_by_weight,
     generate_pickaxe_tier_price = generate_pickaxe_tier_price,
+    select_random_room_based_on_weight = select_random_room_based_on_weight,
+    select_random_element_from_table_by_weight = select_random_element_from_table_by_weight,
+    select_fluids_not_yet_placed = select_fluids_not_yet_placed,
 }
 
 return math;

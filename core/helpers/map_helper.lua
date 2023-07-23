@@ -2,6 +2,7 @@ local kustom_maf = require("core.utils.math")
 local map_config = require("core.config.config")
 local cell_helper = require("core.helpers.cell_helper")
 local rocks_yield_ore = require("core.features.rocks_yield_ore")
+local rocks_yield_coins = require("core.features.rocks_yield_coins")
 local gui = require("core.gui.gui")
 local market = require("core.features.market")
 local config = require("core.config.config")
@@ -11,7 +12,7 @@ local config = require("core.config.config")
 local function on_init(event)
     global.map_cells = {}
     global.discovered_cells = 0
-
+    global.fluids_placed = {}
     global.player_stats = {}
     
     remote.call("freeplay", "set_disable_crashsite", true)
@@ -49,13 +50,13 @@ local function on_player_changed_position(event)
 
     local player_position = kustom_maf.get_cell_by_position(player.position)
 
-    if player.position.x / map_config.grid_size - player_position.x >= 0.95 then
+    if player.position.x / map_config.grid_size - player_position.x >= 0.90 then
         cell_helper.draw_cell_by_coords({ player_position.x + 1, player_position.y })
-    elseif player.position.x / map_config.grid_size - player_position.x <= 0.05 then
+    elseif player.position.x / map_config.grid_size - player_position.x <= 0.1 then
         cell_helper.draw_cell_by_coords({ player_position.x - 1, player_position.y })
-    elseif player.position.y / map_config.grid_size - player_position.y >= 0.95 then
+    elseif player.position.y / map_config.grid_size - player_position.y >= 0.90 then
         cell_helper.draw_cell_by_coords({ player_position.x, player_position.y + 1 })
-    elseif player.position.y / map_config.grid_size - player_position.y <= 0.05 then
+    elseif player.position.y / map_config.grid_size - player_position.y <= 0.1 then
         cell_helper.draw_cell_by_coords({ player_position.x, player_position.y - 1 })
     end
 end
@@ -65,6 +66,7 @@ local function on_configuration_changed()
 end
 
 local function on_player_mined_entity(event)
+    rocks_yield_coins.on_player_mined_entity(event)
     rocks_yield_ore.on_player_mined_entity(event)
 end
 

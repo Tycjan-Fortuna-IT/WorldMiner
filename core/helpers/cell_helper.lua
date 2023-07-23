@@ -61,7 +61,7 @@ local function draw_cell_by_coords(cell_coords)
         end
     end
 
-    kustom_maf.select_random_by_weight(rooms1x1)(surface, { x = cell_coords[1], y = cell_coords[2] }, 0)
+    kustom_maf.select_random_room_based_on_weight(rooms1x1)(surface, { x = cell_coords[1], y = cell_coords[2] }, 0)
 
     init_cell(cell_coords)
 
