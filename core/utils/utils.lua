@@ -1,5 +1,7 @@
 local map_config = require("core.config.config")
 
+local utils = {}
+
 ---
 -- Shuffles the elements of a given table randomly.
 --
@@ -8,7 +10,7 @@ local map_config = require("core.config.config")
 -- @param tbl The input table to be shuffled. It should be a sequence (array-like) table with integer keys starting from 1.
 -- @return The shuffled table with its elements randomly rearranged.
 --
-local function shuffle(table)
+utils.shuffle = function (table)
     local size = #table
 
     for i = size, 1, -1 do
@@ -24,7 +26,7 @@ end
 -- @param pos The coordinate pair to be converted to a string.
 -- @return The string representation of the given coordinate pair.
 --
-local function coord_to_string(pos)
+utils.coord_to_string = function (pos)
     local x = pos[1]
     local y = pos[2]
     if pos.x then
@@ -41,7 +43,7 @@ end
 -- @param pos The position to be converted to cell coordinates.
 -- @return The cell coordinates of the given position.
 --
-local function get_cell_by_position(pos)
+utils.get_cell_by_position = function (pos)
     local x = math.floor(pos.x / map_config.grid_size)
     local y = math.floor(pos.y / map_config.grid_size)
 
@@ -53,7 +55,7 @@ end
 -- @param array The array of functions to select from.
 -- @return The selected function.
 --
-local function select_random_function_by_weight(array)
+utils.select_random_function_by_weight = function(array)
     local total_weight = 0
     for _, data in ipairs(array) do
         total_weight = total_weight + data.weight
@@ -74,7 +76,7 @@ end
 -- @param array The array of elements to select from.
 -- @return The selected element.
 --
-local function select_random_first_element_from_tuple_by_weight(table)
+utils.select_random_first_element_from_tuple_by_weight = function (table)
     local total_weight = 0
     for _, data in ipairs(table) do
         total_weight = total_weight + data[2]
@@ -95,7 +97,7 @@ end
 -- @param array The array of elements to select from.
 -- @return The selected element.
 --
-local function select_random_element_from_table_by_weight(table)
+utils.select_random_element_from_table_by_weight = function(table)
     local total_weight = 0
     for _, data in ipairs(table) do
         total_weight = total_weight + data.weight
@@ -116,7 +118,7 @@ end
 -- @param tier_index The index of the pickaxe tier.
 -- @return The price of the pickaxe tier.
 --
-local function generate_pickaxe_tier_price(tier_index)
+utils.generate_pickaxe_tier_price = function(tier_index)
     local base_price = 100
     local base_multiplier = 1.1
     local growth_multiplier = 1.015
@@ -132,7 +134,7 @@ end
 -- @param min_discovered_rooms The minimum number of rooms that must be discovered before this room can appear.
 -- @return The adjusted weight of the room.
 --
-local function adjust_weight_based_on_discovered_rooms(weight, min_discovered_rooms)
+utils.adjust_weight_based_on_discovered_rooms = function(weight, min_discovered_rooms)
     if global.discovered_cells < min_discovered_rooms then
         return 0  -- Set weight to 0 for rooms that should not appear until a certain number of rooms are discovered
     else
@@ -147,36 +149,44 @@ end
 -- @param rooms The table of rooms to select from.
 -- @return The selected room.
 --
-local function select_random_room_based_on_weight(rooms)
+utils.select_random_room = function (room_weights)
     local total_weight = 0
+    local discovered_rooms = global.discovered_cells or 0
+    local valid_rooms = {}
 
-    -- Calculate the total weight
-    for _, room_data in ipairs(rooms) do
-        total_weight = total_weight + adjust_weight_based_on_discovered_rooms(room_data.weight, room_data.min_discovered_rooms)
-    end
-
-    -- Randomly select a room based on the adjusted weight
-    local random_value = math.random() * total_weight
-    local selected_room
-
-    for _, room_data in ipairs(rooms) do
-        local adjusted_weight = adjust_weight_based_on_discovered_rooms(room_data.weight, room_data.min_discovered_rooms)
-        if random_value <= adjusted_weight then
-            selected_room = room_data.func
-            break
+    for _, room_info in pairs(room_weights) do
+        if discovered_rooms >= room_info.min_discovered_rooms then
+            for i = 1, room_info.weight do
+                total_weight = total_weight + 1
+                valid_rooms[total_weight] = room_info.func
+            end
         end
-        random_value = random_value - adjusted_weight
     end
 
-    return selected_room
+    -- Check if any rooms are guaranteed to spawn at certain points
+    for _, room_info in pairs(room_weights) do
+        if #room_info.guaranteed_at > 0 then
+            for _, guaranteed_point in ipairs(room_info.guaranteed_at) do
+                if discovered_rooms == guaranteed_point then
+                    return room_info.func
+                end
+            end
+        end
+    end
+
+    -- Randomly choose a valid room
+    local random_value = math.random(1, total_weight)
+
+    return valid_rooms[random_value]
 end
+
 
 -- Selects a random fluid from a table of fluids that have not yet been placed.
 --
 -- @param tbl The table of fluids to select from.
 -- @return The selected fluid.
 --
-local function select_fluids_not_yet_placed(tbl)
+utils.select_fluids_not_yet_placed = function (tbl)
     local fluids_not_yet_placed = {}
 
     for _, fluid in ipairs(tbl) do
@@ -188,16 +198,4 @@ local function select_fluids_not_yet_placed(tbl)
     return fluids_not_yet_placed
 end
 
-local math = {
-    shuffle = shuffle,
-    coord_to_string = coord_to_string,
-    get_cell_by_position = get_cell_by_position,
-    select_random_by_weight = select_random_function_by_weight,
-    select_random_first_element_from_tuple_by_weight = select_random_first_element_from_tuple_by_weight,
-    generate_pickaxe_tier_price = generate_pickaxe_tier_price,
-    select_random_room_based_on_weight = select_random_room_based_on_weight,
-    select_random_element_from_table_by_weight = select_random_element_from_table_by_weight,
-    select_fluids_not_yet_placed = select_fluids_not_yet_placed,
-}
-
-return math;
+return utils;

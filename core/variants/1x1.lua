@@ -2,7 +2,7 @@ local get_noise = require('core.utils.noise')
 local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
-local kustom_maf = require('core.utils.math')
+local utils = require('core.utils.utils')
 local functions = require('core.utils.functions')
 local room = {}
 
@@ -60,16 +60,16 @@ room.oil = function(surface, cell_left_top, direction)
     local num_of_oils = 3 + math.floor(global.discovered_cells / 100)
     local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
 
-    local fluids = kustom_maf.select_fluids_not_yet_placed(config.fluid_raffle)
+    local fluids = utils.select_fluids_not_yet_placed(config.fluid_raffle)
 
     local fluid
 
     if next(fluids) ~= nil then
-        fluid = kustom_maf.select_random_element_from_table_by_weight(fluids)
+        fluid = utils.select_random_element_from_table_by_weight(fluids)
 
         global.fluids_placed[fluid.name] = true
     else
-        fluid = kustom_maf.select_random_element_from_table_by_weight(config.fluid_raffle)
+        fluid = utils.select_random_element_from_table_by_weight(config.fluid_raffle)
     end
 
     filler_helper.fill_with_base_tile(surface, left_top)
@@ -98,7 +98,7 @@ room.oil = function(surface, cell_left_top, direction)
 end
 
 room.ore_deposit = function(surface, cell_left_top, direction)
-    local ore_name = kustom_maf.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
+    local ore_name = utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
 
     local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
 
@@ -169,12 +169,12 @@ room.nests = function(surface, cell_left_top, direction)
 end
 
 local room_weights = {
-    { func = room.tons_of_rocks, weight = 100, min_discovered_rooms = 0 },
-    { func = room.tons_of_trees, weight = 34,  min_discovered_rooms = 1 },
-    { func = room.pond,          weight = 9,   min_discovered_rooms = 5 },
-    { func = room.ore_deposit,   weight = 6,   min_discovered_rooms = 10 },
-    { func = room.nests,         weight = 4,   min_discovered_rooms = 10 },
-    { func = room.oil,           weight = 2,   min_discovered_rooms = 10 },
+    { func = room.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  guaranteed_at = { 1, 4 } },
+    { func = room.tons_of_trees, weight = 34,  min_discovered_rooms = 1,  guaranteed_at = { 3 } },
+    { func = room.pond,          weight = 9,   min_discovered_rooms = 5,  guaranteed_at = { 2 } },
+    { func = room.ore_deposit,   weight = 6,   min_discovered_rooms = 10, guaranteed_at = {} },
+    { func = room.nests,         weight = 4,   min_discovered_rooms = 10, guaranteed_at = {} },
+    { func = room.oil,           weight = 1,   min_discovered_rooms = 10, guaranteed_at = { 12, 22, 30 } },
 }
 
 return room_weights

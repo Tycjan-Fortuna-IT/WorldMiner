@@ -1,4 +1,4 @@
-local kustom_maf = require('core.utils.math')
+local utils = require('core.utils.utils')
 local Constants = require('core.utils.constants')
 local Functions = require('core.utils.functions')
 local market = {}
@@ -10,7 +10,7 @@ market.build = function(position)
     market.destructible = false
     market.minable = false
 
-    market.add_market_item { price = { { "coin", kustom_maf.generate_pickaxe_tier_price(1) } }, offer = {
+    market.add_market_item { price = { { "coin", utils.generate_pickaxe_tier_price(1) } }, offer = {
         type = 'nothing',
         effect_description = 'Upgrade pickaxe to next tier'
     } }
@@ -21,7 +21,7 @@ local special_slots = {
         local pickaxe_tiers = Constants.pickaxe_tiers
         local tier = global.player_stats[player.index].pickaxe_tier + 1
         if pickaxe_tiers[tier] then
-            local price = kustom_maf.generate_pickaxe_tier_price(tier)
+            local price = utils.generate_pickaxe_tier_price(tier)
 
             market.add_market_item { price = { { "coin", price } }, offer = {
                 type = 'nothing',

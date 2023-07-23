@@ -1,4 +1,4 @@
-local kustom_maf = require("core.utils.math")
+local utils = require("core.utils.utils")
 local map_config = require("core.config.config")
 local cell_helper = require("core.helpers.cell_helper")
 local rocks_yield_ore = require("core.features.rocks_yield_ore")
@@ -11,13 +11,14 @@ local config = require("core.config.config")
 
 local function on_init(event)
     global.map_cells = {}
-    global.discovered_cells = 0
+    global.discovered_cells = 1
     global.fluids_placed = {}
     global.player_stats = {}
-    
+
     remote.call("freeplay", "set_disable_crashsite", true)
     remote.call("freeplay", "set_skip_intro", true)
-    game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 }, game.surfaces.nauvis)
+    game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 },
+        game.surfaces.nauvis)
 
     map_config.on_init()
     rocks_yield_ore.on_init()
@@ -31,8 +32,9 @@ local function on_chunk_generated(event)
         cell_helper.draw_starting_cell(surface, left_top)
 
         local center_x = left_top.x + config.grid_size / 2
-    
-        market.build({center_x, 25})
+        local center_y = left_top.y + config.grid_size / 2
+
+        market.build({ center_x, center_y })
 
         return
     end
@@ -48,7 +50,7 @@ end
 local function on_player_changed_position(event)
     local player = game.players[event.player_index]
 
-    local player_position = kustom_maf.get_cell_by_position(player.position)
+    local player_position = utils.get_cell_by_position(player.position)
 
     if player.position.x / map_config.grid_size - player_position.x >= 0.90 then
         cell_helper.draw_cell_by_coords({ player_position.x + 1, player_position.y })
