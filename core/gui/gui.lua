@@ -1,9 +1,17 @@
+local constants = require('core.utils.constants')
+
 local function create_cave_miner_stats_gui(player)
     if not player.character then
         return
     end
+
     if player.gui.top['caver_miner_stats_frame'] then
         player.gui.top['caver_miner_stats_frame'].destroy()
+    end
+
+    if not global.player_stats[player.index] then
+        global.player_stats[player.index] = {}
+        global.player_stats[player.index].pickaxe_tier = 1
     end
 
     local captions = {}
@@ -48,6 +56,10 @@ local function create_cave_miner_stats_gui(player)
 
     captions[3] = t.add {type = 'label', caption = 'Discovered cells:'}
     stat_numbers[3] = t.add {type = 'label', caption = global.discovered_cells}
+    separators[3] = t.add {type = 'label', caption = '|'}
+
+    captions[4] = t.add {type = 'label', caption = 'Pickaxe tier:'}
+    stat_numbers[4] = t.add {type = 'label', caption = constants.pickaxe_tiers[global.player_stats[player.index].pickaxe_tier]}
 
     for _, s in pairs(caption_style) do
         for _, l in pairs(captions) do
@@ -71,10 +83,7 @@ end
 
 local function refresh_gui()
     for _, player in pairs(game.connected_players) do
-        local frame = player.gui.top['caver_miner_stats_frame']
-        if (frame) then
-            create_cave_miner_stats_gui(player)
-        end
+        create_cave_miner_stats_gui(player)
     end
 end
 

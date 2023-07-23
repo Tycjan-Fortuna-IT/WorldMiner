@@ -7,7 +7,7 @@ local map_config = require("core.config.config")
 --
 -- @param tbl The input table to be shuffled. It should be a sequence (array-like) table with integer keys starting from 1.
 -- @return The shuffled table with its elements randomly rearranged.
--- 
+--
 local function shuffle(table)
     local size = #table
 
@@ -45,7 +45,7 @@ local function get_cell_by_position(pos)
     local x = math.floor(pos.x / map_config.grid_size)
     local y = math.floor(pos.y / map_config.grid_size)
 
-    return {x = x, y = y}
+    return { x = x, y = y }
 end
 
 -- Selects a random function from an array of functions based on their weights.
@@ -90,13 +90,29 @@ local function select_random_first_element_from_tuple_by_weight(table)
     end
 end
 
+-- Generates the price of a pickaxe tier based on its index.
+--
+-- @param tier_index The index of the pickaxe tier.
+-- @return The price of the pickaxe tier.
+--
+local function generate_pickaxe_tier_price(tier_index)
+    local base_price = 100
+    local base_multiplier = 1.1
+    local growth_multiplier = 1.015
+
+    local price = math.floor(base_price * math.pow(base_multiplier, tier_index) + tier_index ^ 2 * growth_multiplier)
+
+    return price
+end
+
 
 local math = {
-    shuffle = shuffle;
-    coord_to_string = coord_to_string;
-    get_cell_by_position = get_cell_by_position;
-    select_random_by_weight = select_random_function_by_weight;
-    select_random_first_element_from_tuple_by_weight = select_random_first_element_from_tuple_by_weight;
+    shuffle = shuffle,
+    coord_to_string = coord_to_string,
+    get_cell_by_position = get_cell_by_position,
+    select_random_by_weight = select_random_function_by_weight,
+    select_random_first_element_from_tuple_by_weight = select_random_first_element_from_tuple_by_weight,
+    generate_pickaxe_tier_price = generate_pickaxe_tier_price,
 }
 
 return math;

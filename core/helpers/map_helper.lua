@@ -3,6 +3,8 @@ local map_config = require("core.config.config")
 local cell_helper = require("core.helpers.cell_helper")
 local rocks_yield_ore = require("core.features.rocks_yield_ore")
 local gui = require("core.gui.gui")
+local market = require("core.features.market")
+local config = require("core.config.config")
 
 ------------------------------------------------------------------------------------
 
@@ -10,6 +12,8 @@ local function on_init(event)
     global.map_cells = {}
     global.discovered_cells = 0
 
+    global.player_stats = {}
+    
     remote.call("freeplay", "set_disable_crashsite", true)
     remote.call("freeplay", "set_skip_intro", true)
     game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 }, game.surfaces.nauvis)
@@ -24,6 +28,10 @@ local function on_chunk_generated(event)
 
     if left_top.x == 0 and left_top.y == 0 then
         cell_helper.draw_starting_cell(surface, left_top)
+
+        local center_x = left_top.x + config.grid_size / 2
+    
+        market.build({center_x, 25})
 
         return
     end
@@ -64,6 +72,10 @@ local function on_entity_died(entity)
     rocks_yield_ore.on_entity_died(entity)
 end
 
+local function on_market_item_purchased(event)
+    market.on_market_item_purchased(event)
+end
+
 local function on_tick(event)
     if game.tick % 300 == 0 then
         gui.refresh_gui()
@@ -77,7 +89,8 @@ local map_helper = {
     on_player_changed_position = on_player_changed_position,
     on_player_mined_entity = on_player_mined_entity,
     on_entity_died = on_entity_died,
-    on_tick = on_tick
+    on_tick = on_tick,
+    on_market_item_purchased = on_market_item_purchased
 }
 
 return map_helper;

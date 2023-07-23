@@ -4,7 +4,6 @@ local math_floor = math.floor
 local math_sqrt = math.sqrt
 
 local config = require('core.config.config')
-local gui = require('core.gui.gui')
 
 local rock_yield = {
     ['rock-big'] = 1,
@@ -103,38 +102,41 @@ local function on_player_mined_entity(event)
     global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
     global.rocks_yield_ore['rocks_broken'] = global.rocks_yield_ore['rocks_broken'] + 1
 
-    local position = {x = entity.position.x, y = entity.position.y}
+    local position = { x = entity.position.x, y = entity.position.y }
 
     local ore_amount = math_floor(count * 0.85) + 1
     local stone_amount = math_floor(count * 0.15) + 1
 
-    player.surface.create_entity({name = 'flying-text', position = position, text = '+' .. ore_amount .. ' [img=item/' .. ore .. ']', color = {r = 200, g = 160, b = 30}})
-    create_particles(player.surface, particles[ore], position, 64, {x = player.position.x, y = player.position.y})
+    player.surface.create_entity({ name = 'flying-text', position = position,
+        text = '+' .. ore_amount .. ' [img=item/' .. ore .. ']', color = { r = 200, g = 160, b = 30 } })
+    create_particles(player.surface, particles[ore], position, 64, { x = player.position.x, y = player.position.y })
 
+    player.surface.spill_item_stack(position, { name = 'coin', count = rock_yield[entity.name] + math.random(1, 2) }, true)
+    
     entity.destroy()
 
     if ore_amount > max_spill then
-        player.surface.spill_item_stack(position, {name = ore, count = max_spill}, true)
+        player.surface.spill_item_stack(position, { name = ore, count = max_spill }, true)
         ore_amount = ore_amount - max_spill
-        local inserted_count = player.insert({name = ore, count = ore_amount})
+        local inserted_count = player.insert({ name = ore, count = ore_amount })
         ore_amount = ore_amount - inserted_count
         if ore_amount > 0 then
-            player.surface.spill_item_stack(position, {name = ore, count = ore_amount}, true)
+            player.surface.spill_item_stack(position, { name = ore, count = ore_amount }, true)
         end
     else
-        player.surface.spill_item_stack(position, {name = ore, count = ore_amount}, true)
+        player.surface.spill_item_stack(position, { name = ore, count = ore_amount }, true)
     end
 
     if stone_amount > max_spill then
-        player.surface.spill_item_stack(position, {name = 'stone', count = max_spill}, true)
+        player.surface.spill_item_stack(position, { name = 'stone', count = max_spill }, true)
         stone_amount = stone_amount - max_spill
-        local inserted_count = player.insert({name = 'stone', count = stone_amount})
+        local inserted_count = player.insert({ name = 'stone', count = stone_amount })
         stone_amount = stone_amount - inserted_count
         if stone_amount > 0 then
-            player.surface.spill_item_stack(position, {name = 'stone', count = stone_amount}, true)
+            player.surface.spill_item_stack(position, { name = 'stone', count = stone_amount }, true)
         end
     else
-        player.surface.spill_item_stack(position, {name = 'stone', count = stone_amount}, true)
+        player.surface.spill_item_stack(position, { name = 'stone', count = stone_amount }, true)
     end
 end
 
@@ -149,7 +151,7 @@ local function on_entity_died(event)
 
     local surface = entity.surface
     local ore = global.rocks_yield_ore['raffle'][math_random(1, global.rocks_yield_ore['size_of_raffle'])]
-    local pos = {entity.position.x, entity.position.y}
+    local pos = { entity.position.x, entity.position.y }
     create_particles(surface, particles[ore], pos, 16, false)
 
     if event.cause then
@@ -165,11 +167,11 @@ local function on_entity_died(event)
 
     local count = math_random(6, 9)
     global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
-    surface.spill_item_stack(pos, {name = ore, count = count}, true)
+    surface.spill_item_stack(pos, { name = ore, count = count }, true)
 
     count = math_random(1, 3)
     global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
-    surface.spill_item_stack(pos, {name = 'stone', count = math_random(1, 3)}, true)
+    surface.spill_item_stack(pos, { name = 'stone', count = math_random(1, 3) }, true)
 
     global.rocks_yield_ore['rocks_broken'] = global.rocks_yield_ore['rocks_broken'] + 1
 end
