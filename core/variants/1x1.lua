@@ -89,9 +89,9 @@ room.oil = function(surface, cell_left_top, direction)
 
         for _, corner_position in ipairs(corner_positions) do
             surface.create_entity({
-                name = fluid.name,
+                name = fluid and fluid.name or 'crude-oil',
                 position = corner_position,
-                amount = 10000 + global.discovered_cells * 400 * fluid.scale
+                amount = 10000 + global.discovered_cells * 400 * (fluid and fluid.scale or 100)
             })
         end
     end
