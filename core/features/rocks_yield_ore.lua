@@ -68,11 +68,12 @@ local function get_amount(entity)
     local distance_to_center = math_floor(math_sqrt(entity.position.x ^ 2 + entity.position.y ^ 2))
 
     local amount = global.rocks_yield_ore_base_amount + (distance_to_center * global.rocks_yield_ore_distance_modifier)
+
     if amount > global.rocks_yield_ore_maximum_amount then
         amount = global.rocks_yield_ore_maximum_amount
     end
 
-    local m = (70 + math_random(0, 60)) * 0.01
+    local m = (50 + math_random(0, 60)) * 0.01
 
     amount = math_floor(amount * rock_yield[entity.name] * m)
     if amount < 1 then

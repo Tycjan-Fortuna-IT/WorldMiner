@@ -8,52 +8,29 @@ local room = {}
 
 require('core.utils.table')
 
+room.init = function()
+    -- TODO make it more random i guess (guaranteed_at is a bit weird)
+    room.room_weights = {
+        { func = room.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  guaranteed_at = { 1 } },
+        { func = room.tons_of_trees, weight = 34,  min_discovered_rooms = 1,  guaranteed_at = { 3 } },
+        { func = room.pond,          weight = 9,   min_discovered_rooms = 5,  guaranteed_at = { 2 } },
+        { func = room.ore_deposit,   weight = 6,   min_discovered_rooms = 10, guaranteed_at = { 5 } },
+        { func = room.nests,         weight = 4,   min_discovered_rooms = 10, guaranteed_at = { 6 } },
+        { func = room.oil,           weight = 1,   min_discovered_rooms = 10, guaranteed_at = { 12, 22, 30 } },
+    }
+end
+
 room.tons_of_rocks = function(surface, cell_left_top, direction)
     local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
 
-    local seed = game.surfaces[1].map_gen_settings.seed
-
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
-            local pos = { left_top.x + x, left_top.y + y }
-
-            local noise = get_noise('stone', pos, seed)
-
-            if math.random(1, 3) ~= 1 then
-                if noise > 0.2 or noise < -0.2 then
-                    surface.create_entity({
-                        name = config.rock_raffle[math.random(1, #config.rock_raffle)],
-                        position = pos,
-                        force = 'neutral'
-                    })
-                end
-            end
-        end
-    end
+    map_functions.draw_spreaded_rocks_around(left_top, surface, true)
 end
 
+
 room.tons_of_trees = function(surface, cell_left_top, direction)
-    local tree = config.tree_raffle[math.random(1, #config.tree_raffle)]
-    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
-    local seed = math.random(1000, 1000000)
-
-    filler_helper.fill_with_base_tile(surface, left_top)
-
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
-            local pos = { left_top.x + x, left_top.y + y }
-
-            local noise = get_noise('tree', pos, seed)
-
-            if math.random(1, 3) == 1 then
-                if noise > 0.25 or noise < -0.25 then
-                    surface.create_entity({ name = tree, position = pos, force = 'neutral' })
-                end
-            end
-        end
-    end
+    map_functions.draw_spreaded_trees_around(cell_left_top, surface, true)
 end
 
 room.oil = function(surface, cell_left_top, direction)
@@ -95,18 +72,30 @@ room.oil = function(surface, cell_left_top, direction)
             })
         end
     end
+
+    map_functions.draw_spreaded_rocks_around(left_top, surface, false)
+    map_functions.draw_spreaded_trees_around(cell_left_top, surface, false)
 end
 
 room.ore_deposit = function(surface, cell_left_top, direction)
     local ore_name = utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
-
     local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
+    local center_x = left_top.x + config.grid_size * 0.5
+    local center_y = left_top.y + config.grid_size * 0.5
+
+    local distance_to_center = math.sqrt(center_x ^ 2 + center_y ^ 2)
+    local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
+    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 3
+
     map_functions.draw_irregular_noise_ore_deposit(
         { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }, ore_name, surface,
-        config.grid_size * 0.3, (global.discovered_cells + 1) * 200, 0.2, 0.1)
+        config.grid_size * 0.3, 1968 * scaling_factor, 0.2, 0.1)
+
+    map_functions.draw_spreaded_rocks_around(left_top, surface, false)
+    map_functions.draw_spreaded_trees_around(cell_left_top, surface, false)
 end
 
 room.pond = function(surface, cell_left_top, direction)
@@ -166,15 +155,9 @@ room.nests = function(surface, cell_left_top, direction)
             break
         end
     end
+
+    map_functions.draw_spreaded_rocks_around(left_top, surface, false)
+    map_functions.draw_spreaded_trees_around(cell_left_top, surface, false)
 end
 
-local room_weights = {
-    { func = room.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  guaranteed_at = { 1, 4 } },
-    { func = room.tons_of_trees, weight = 34,  min_discovered_rooms = 1,  guaranteed_at = { 3 } },
-    { func = room.pond,          weight = 9,   min_discovered_rooms = 5,  guaranteed_at = { 2 } },
-    { func = room.ore_deposit,   weight = 6,   min_discovered_rooms = 10, guaranteed_at = {} },
-    { func = room.nests,         weight = 4,   min_discovered_rooms = 10, guaranteed_at = {} },
-    { func = room.oil,           weight = 1,   min_discovered_rooms = 10, guaranteed_at = { 12, 22, 30 } },
-}
-
-return room_weights
+return room

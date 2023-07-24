@@ -1,13 +1,18 @@
 local config = require('core.config.config')
+local map_config = require("core.config.config")
 
 local function fill_with_base_tile(surface, cell_left_top)
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
+    local tiles = {}
+
+    for x = 0, config.grid_size - 1, 1 do
+        for y = 0, config.grid_size - 1, 1 do
             local pos = { cell_left_top.x + x, cell_left_top.y + y }
 
-            surface.set_tiles({ { name = config.base_tile, position = pos } }, true)
+            tiles[#tiles + 1] = { name = map_config.base_tile, position = pos }
         end
     end
+
+    surface.set_tiles(tiles)
 end
 
 local filler_helper = {

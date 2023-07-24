@@ -6,6 +6,7 @@ local rocks_yield_coins = require("core.features.rocks_yield_coins")
 local gui = require("core.gui.gui")
 local market = require("core.features.market")
 local config = require("core.config.config")
+local rooms1x1 = require("core.variants.1x1")
 
 ------------------------------------------------------------------------------------
 
@@ -42,8 +43,8 @@ local function on_chunk_generated(event)
 
     local tiles = {}
 
-    for x = 0, 31, 1 do
-        for y = 0, 31, 1 do
+    for x = 0, config.grid_size - 1, 1 do
+        for y = 0, config.grid_size - 1, 1 do
             tiles[#tiles + 1] = { name = map_config.void_tile, position = { x = left_top.x + x, y = left_top.y + y } }
         end
     end
@@ -59,7 +60,6 @@ end
 --     local right_bottom = { x = area.right_bottom.x + config.grid_size, y = area.right_bottom.y + config.grid_size }
 
 --     local grid_size = config.grid_size
---     local void_tile_name = 
 
     
 --     local center_x = grid_size / 2
@@ -104,7 +104,12 @@ local function on_player_changed_position(event)
 end
 
 local function on_configuration_changed()
-    rocks_yield_ore.on_configuration_changed()
+    game.print('Expore world chunk by chunk, mine rock for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
+    game.print('You will find chunks with rocks, trees, water, oil, ore veins, enemies and many more! ...', {r = 255, g = 255, b = 50})
+
+    rooms1x1.init()
+    rocks_yield_ore
+    .on_configuration_changed()
 end
 
 local function on_player_mined_entity(event)

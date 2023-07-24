@@ -61,7 +61,7 @@ local function draw_cell_by_coords(cell_coords)
         end
     end
 
-    utils.select_random_room(rooms1x1)(surface, { x = cell_coords[1], y = cell_coords[2] }, 0)
+    utils.select_random_room(rooms1x1.room_weights)(surface, { x = cell_coords[1], y = cell_coords[2] }, 0)
 
     init_cell(cell_coords)
 
@@ -92,6 +92,11 @@ local function draw_starting_cell(surface, left_top)
     init_cell({ 0, 0 })
 
     global.map_cells[utils.coord_to_string({ 0, 0 })].visited = true
+
+    game.print('Expore world chunk by chunk, mine rock for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
+    game.print('You will find chunks with rocks, trees, water, oil, ore veins, enemies and many more! ...', {r = 255, g = 255, b = 50})
+
+    rooms1x1.init()
 end
 
 
