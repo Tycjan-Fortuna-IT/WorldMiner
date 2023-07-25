@@ -2,7 +2,7 @@ local simplex_noise = require('core.utils.simplex_noise')
 local config = require('core.config.config')
 local get_noise = require('core.utils.noise')
 local filler_helper = require('core.helpers.filler_helper')
-
+local lua = require('core.utils.lua')
 simplex_noise = simplex_noise.d2
 local f = {}
 local math_random = math.random
@@ -89,7 +89,7 @@ f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
     local seed = game.surfaces[1].map_gen_settings.seed
 
     local discovered_cells = global.discovered_cells or 0
-    local rocks_spawn_probability = math.min(discovered_cells / 30, 1)
+    local rocks_spawn_probability = math.min(discovered_cells / 15, 1)
 
     for x = 0.5, config.grid_size - 0.5, 1 do
         for y = 0.5, config.grid_size - 0.5, 1 do
@@ -97,7 +97,13 @@ f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
 
             local noise = get_noise('stone', pos, seed)
 
-            if math.random(1, 3) ~= 1 and math.random() <= rocks_spawn_probability and noise > 0.2 then
+            local generate_rock = lua.ternary(
+                settings.startup["generate-more-rocks-from-start"].value, 
+                math.random(1, 3) ~= 1 and (noise > 0.2 or noise < -0.2), 
+                math.random(1, 3) ~= 1 and math.random() <= rocks_spawn_probability and noise > 0.2
+            )
+
+            if generate_rock then
                 local rock_entity = {
                     name = config.rock_raffle[math.random(1, #config.rock_raffle)],
                     position = pos,
@@ -107,7 +113,9 @@ f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
                 if override then
                     surface.create_entity(rock_entity)
                 elseif surface.can_place_entity(rock_entity) then
-                    surface.create_entity(rock_entity)
+                    if math.random(1, 15) == 1 then
+                        surface.create_entity(rock_entity)
+                    end
                 end
             end
         end
@@ -129,8 +137,14 @@ f.draw_spreaded_trees_around = function (cell_left_top, surface, override)
             local pos = { left_top.x + x, left_top.y + y }
 
             local noise = get_noise('tree', pos, seed)
+            
+            local generate_tree = lua.ternary(
+                settings.startup["generate-more-trees-from-start"].value, 
+                math.random(1, 3) == 1 and noise > 0.25 or noise < -0.25 , 
+                math.random(1, 3) == 1 and math.random() <= tree_spawn_probability and noise < -0.25
+            )
 
-            if math.random(1, 3) == 1 and math.random() <= tree_spawn_probability and  noise < -0.25 then
+            if generate_tree then
                 surface.create_entity({ name = tree, position = pos, force = 'neutral' })
             end
         end

@@ -36,5 +36,4 @@ C.pickaxe_tiers = {
     'Empyrean'
 }
 
-
 return C

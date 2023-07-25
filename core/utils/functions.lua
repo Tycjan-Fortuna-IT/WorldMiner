@@ -2,8 +2,10 @@ local functions = {}
 
 functions.set_mining_speed = function (player, force)
     force.manual_mining_speed_modifier = global.player_stats[player.index].pickaxe_tier * 0.2
+end
 
-    return force.manual_mining_speed_modifier
+functions.set_inventory_slot_bonus = function (player, tier)
+    player.character_inventory_slots_bonus = tier
 end
 
 functions.get_biter_amount = function ()

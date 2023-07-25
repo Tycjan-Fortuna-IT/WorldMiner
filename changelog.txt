@@ -8,3 +8,14 @@ Version: 0.1.1
 Date: 24.07.2023
   Changes:
     - Additional fluid variant safety check
+---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: XX.XX.2023
+  Features:
+  Minor Features:
+    - Rooms with enemies, ore veins and oil now feel a litle less empty
+    - More market items (ore exchange, backpack upgrade, blue coins currency)
+  Balancing:
+    - Less ore from rocks at the begining (now scales better with distance from center)
+    - Ore patches richness improved (now scales better with distance from center)
+    - Less rocks and trees in 1x1 rooms (you still can have old quantity by enabling `More Rocks` and `More Trees` settings)

@@ -10,6 +10,7 @@ local config = {
     },
     ore_raffle = {},
     fluid_raffle = {},
+    spawn_market_items = {},
 }
 
 config.on_init = function()
@@ -25,6 +26,20 @@ config.on_init = function()
 
     local base_fluid_raffle = {
         { name = 'crude-oil', weight = 1, scale = 100 },
+    }
+
+    local base_spawn_market_items = {
+        { price = { { 'iron-ore', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'copper-ore', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'coal', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'uranium-ore', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 2 } },
+        { price = { { 'stone', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'iron-ore', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'copper-ore', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'coal', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'uranium-ore', count = 100 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'stone', count = 200 } },
     }
 
     local angels_ore_raffle = {
@@ -44,11 +59,30 @@ config.on_init = function()
         { name = 'angels-fissure',     weight = 1, scale = 1 },
     }
 
+    local angels_spawn_market_items = {
+        { price = { { 'angels-ore1', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'angels-ore2', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'angels-ore3', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'angels-ore4', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'angels-ore5', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'angels-ore6', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        { price = { { 'coal', 200 } }, offer = { type = 'give-item', item = 'blue-coin', count = 1 } },
+        
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'angels-ore1', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'angels-ore2', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'angels-ore3', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'angels-ore4', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'angels-ore5', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'angels-ore6', count = 200 } },
+        { price = { { 'blue-coin', 2 } }, offer = { type = 'give-item', item = 'coal', count = 200 } },
+    }
+
     -- Check if angels exists and use appropriate raffle tables
     local angels_ore_exists = game.entity_prototypes['angels-ore1']
 
     local ore_raffle_to_use = angels_ore_exists and angels_ore_raffle or base_ore_raffle
     local fluid_raffle_to_use = angels_ore_exists and angels_fluid_raffle or base_fluid_raffle
+    local spawn_market_items_to_use = angels_ore_exists and angels_spawn_market_items or base_spawn_market_items
 
     for _, ore in ipairs(ore_raffle_to_use) do
         table.insert(config.ore_raffle, ore)
@@ -56,6 +90,10 @@ config.on_init = function()
 
     for _, fluid in ipairs(fluid_raffle_to_use) do
         table.insert(config.fluid_raffle, fluid)
+    end
+
+    for _, offer in ipairs(spawn_market_items_to_use) do
+        table.insert(config.spawn_market_items, offer)
     end
 end
 

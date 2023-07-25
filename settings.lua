@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
     {
         type = "double-setting",
         name = "rocks-yield-ore-distance-modifier",
@@ -25,5 +25,19 @@ data:extend({
         minimum_value = 0,
         maximum_value = 1000,
         order = "c"
-    }
-})
+    },
+    {
+        type = "bool-setting",
+        name = "generate-more-rocks-from-start",
+        setting_type = "startup",
+        default_value = false,
+        order = "d"
+    },
+    {
+        type = "bool-setting",
+        name = "generate-more-trees-from-start",
+        setting_type = "startup",
+        default_value = false,
+        order = "d"
+    },
+}

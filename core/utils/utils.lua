@@ -128,6 +128,21 @@ utils.generate_pickaxe_tier_price = function(tier_index)
     return price
 end
 
+-- Generates the price of a backpack tier based on its index.
+--
+-- @param tier_index The index of the backpack tier.
+-- @return The price of the backpack tier.
+--
+utils.generate_backpack_tier_price = function(tier_index)
+    local base_price = 140
+    local base_multiplier = 1.08
+    local growth_multiplier = 1.215
+
+    local price = math.floor(base_price * math.pow(base_multiplier, tier_index) + tier_index ^ 2 * growth_multiplier)
+
+    return price
+end
+
 -- Adjusts the weight of a room based on the number of discovered rooms.
 --
 -- @param weight The base weight of the room.
