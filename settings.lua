@@ -40,4 +40,11 @@ data:extend{
         default_value = false,
         order = "d"
     },
+    {
+        type = "bool-setting",
+        name = "rocks-yield-enemies",
+        setting_type = "startup",
+        default_value = true,
+        order = "e"
+    },
 }

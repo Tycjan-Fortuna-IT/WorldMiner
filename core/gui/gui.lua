@@ -1,5 +1,17 @@
 local constants = require('core.utils.constants')
 
+local function create_cave_miner_stats_toggle_button(player)
+    if player.gui.top['caver_miner_stats_toggle_button'] then
+        player.gui.top['caver_miner_stats_toggle_button'].destroy()
+    end
+
+    local b = player.gui.top.add({type = 'sprite-button', name = 'caver_miner_stats_toggle_button', sprite = 'item/dummy-steel-axe'})
+    
+    b.style.minimal_height = 38
+    b.style.minimal_width = 38
+    b.style.padding = 1
+end
+
 local function create_cave_miner_stats_gui(player)
     if not player.character then
         return
@@ -83,13 +95,37 @@ end
 
 local function refresh_gui()
     for _, player in pairs(game.connected_players) do
+        create_cave_miner_stats_toggle_button(player)
+        if (player.gui.top['caver_miner_stats_frame']) then
+            create_cave_miner_stats_gui(player)
+        end
+    end
+end
+
+local function on_gui_click(event)
+    if not event then return end
+    if not event.element then return end
+    if not event.element.valid then return end
+
+    local player = game.players[event.element.player_index]
+    local name = event.element.name
+    local frame = player.gui.top['caver_miner_stats_frame']
+
+    if name == 'caver_miner_stats_toggle_button' and frame == nil then
         create_cave_miner_stats_gui(player)
+    elseif name == 'caver_miner_stats_toggle_button' and frame then
+        if player.gui.top['caver_miner_stats_frame'] then
+            frame.destroy()
+        else
+            create_cave_miner_stats_gui(player)
+        end
     end
 end
 
 local gui = {
     create_cave_miner_stats_gui = create_cave_miner_stats_gui,
-    refresh_gui = refresh_gui
+    refresh_gui = refresh_gui,
+    on_gui_click = on_gui_click
 }
 
 return gui

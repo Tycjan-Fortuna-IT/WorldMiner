@@ -5,12 +5,6 @@ local math_sqrt = math.sqrt
 
 local config = require('core.config.config')
 
-local rock_yield = {
-    ['rock-big'] = 1,
-    ['rock-huge'] = 2,
-    ['sand-rock-big'] = 1
-}
-
 local particles = {
     ['iron-ore'] = 'iron-ore-particle',
     ['copper-ore'] = 'copper-ore-particle',
@@ -75,7 +69,7 @@ local function get_amount(entity)
 
     local m = (50 + math_random(0, 60)) * 0.01
 
-    amount = math_floor(amount * rock_yield[entity.name] * m)
+    amount = math_floor(amount * config.rock_yield[entity.name] * m)
     if amount < 1 then
         amount = 1
     end
@@ -88,7 +82,7 @@ local function on_player_mined_entity(event)
     if not entity.valid then
         return
     end
-    if not rock_yield[entity.name] then
+    if not config.rock_yield[entity.name] then
         return
     end
 
@@ -144,7 +138,7 @@ local function on_entity_died(event)
     if not entity.valid then
         return
     end
-    if not rock_yield[entity.name] then
+    if not config.rock_yield[entity.name] then
         return
     end
 

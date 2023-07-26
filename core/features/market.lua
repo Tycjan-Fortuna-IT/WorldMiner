@@ -4,6 +4,8 @@ local Functions = require('core.utils.functions')
 local config = require('core.config.config')
 local market = {}
 
+--- @param position Table|Tuple
+--- @return nil
 market.build = function(position)
     local surface = game.surfaces.nauvis
     local market = surface.create_entity({ name = 'market', position = position, force = 'player' })
@@ -25,6 +27,8 @@ market.build = function(position)
     end
 end
 
+--- Special slots in the market where proper functionality is needed
+--- @type table<number, function<Market, Player>>
 local special_slots = {
     [1] = function(market, player)
         local pickaxe_tiers = Constants.pickaxe_tiers
@@ -54,6 +58,11 @@ local special_slots = {
     end,
 }
 
+--- Refreshes the market offer
+--- @param market Market
+--- @param player Player
+--- @param slot number
+--- @return nil
 market.refresh_offer = function (market, player, slot)
     local offers = market.get_market_items()
 
@@ -68,6 +77,9 @@ market.refresh_offer = function (market, player, slot)
     end
 end
 
+--- On market item purchased.
+--- @param event MarketEvent
+--- @return nil
 market.on_market_item_purchased = function(event)
     if not global.player_stats[event.player_index] then
         global.player_stats[event.player_index] = {}
@@ -83,8 +95,6 @@ market.on_market_item_purchased = function(event)
     if bought_offer.type ~= 'nothing' then
         return
     end
-
-    local count = event.count
 
     if offer_index == 1 and Constants.pickaxe_tiers[global.player_stats[event.player_index].pickaxe_tier + 1] then
         m.force.play_sound({ path = 'utility/new_objective', volume_modifier = 0.75 })

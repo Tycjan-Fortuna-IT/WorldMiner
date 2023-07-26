@@ -7,6 +7,7 @@ local gui = require("core.gui.gui")
 local market = require("core.features.market")
 local config = require("core.config.config")
 local rooms1x1 = require("core.variants.1x1")
+local rocks_yield_enemies = require("core.features.rocks_yield_enemies")
 
 ------------------------------------------------------------------------------------
 
@@ -114,6 +115,7 @@ end
 
 local function on_player_mined_entity(event)
     rocks_yield_coins.on_player_mined_entity(event)
+    rocks_yield_enemies.on_player_mined_entity(event)
     rocks_yield_ore.on_player_mined_entity(event)
 end
 
@@ -131,6 +133,10 @@ local function on_tick(event)
     end
 end
 
+local function on_gui_click(event)
+    gui.on_gui_click(event)
+end
+
 local map_helper = {
     on_init = on_init,
     on_configuration_changed = on_configuration_changed,
@@ -139,7 +145,8 @@ local map_helper = {
     on_player_mined_entity = on_player_mined_entity,
     on_entity_died = on_entity_died,
     on_tick = on_tick,
-    on_market_item_purchased = on_market_item_purchased
+    on_market_item_purchased = on_market_item_purchased,
+    on_gui_click = on_gui_click,
 }
 
 return map_helper;

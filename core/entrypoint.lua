@@ -10,3 +10,4 @@ script.on_event(defines.events.on_chunk_generated, map_helper.on_chunk_generated
 script.on_event(defines.events.on_player_mined_entity, map_helper.on_player_mined_entity)
 script.on_event(defines.events.on_tick, map_helper.on_tick)
 script.on_event(defines.events.on_market_item_purchased, map_helper.on_market_item_purchased)
+script.on_event(defines.events.on_gui_click, map_helper.on_gui_click)
