@@ -102,12 +102,17 @@ local function on_player_mined_entity(event)
     local ore_amount = math_floor(count * 0.85) + 1
     local stone_amount = math_floor(count * 0.15) + 1
 
-    player.surface.create_entity({ name = 'flying-text', position = position,
-        text = '+' .. ore_amount .. ' [img=item/' .. ore .. ']', color = { r = 200, g = 160, b = 30 } })
+    player.surface.create_entity(
+        {
+            name = 'flying-text',
+            position = entity.position,
+            text = '+' .. ore_amount .. ' [img=item/' .. ore .. ']',
+            color = {r = 0.8, g = 0.8, b = 0.8}
+        }
+    )
+
     create_particles(player.surface, particles[ore], position, 64, { x = player.position.x, y = player.position.y })
     
-    entity.destroy()
-
     if ore_amount > max_spill then
         player.surface.spill_item_stack(position, { name = ore, count = max_spill }, true)
         ore_amount = ore_amount - max_spill

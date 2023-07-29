@@ -16,10 +16,10 @@ variant1x2.init = function()
     -- TODO make it more random i guess (guaranteed_at is a bit weird)
     variant1x2.rooms = {
         { func = variant1x2.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { func = variant1x2.tons_of_trees, weight = 37, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
-        { func = variant1x2.pond, weight = 9, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
-        { func = variant1x2.ore_deposit, weight = 6, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 5 } },
-        { func = variant1x2.nests, weight = 4, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 7 } }
+        { func = variant1x2.tons_of_trees, weight = 37,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
+        { func = variant1x2.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
+        { func = variant1x2.ore_deposit,   weight = 6,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 5 } },
+        { func = variant1x2.nests,         weight = 4,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 7 } }
     }
 end
 

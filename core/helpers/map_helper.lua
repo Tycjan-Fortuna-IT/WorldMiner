@@ -8,6 +8,7 @@ local market = require("core.features.market")
 local config = require("core.config.config")
 local rooms1x1 = require("core.variants.1x1")
 local rocks_yield_enemies = require("core.features.rocks_yield_enemies")
+local trees_yield_ore     = require("core.features.trees_yield_ore")
 
 ------------------------------------------------------------------------------------
 
@@ -127,6 +128,9 @@ local function on_player_mined_entity(event)
     rocks_yield_coins.on_player_mined_entity(event)
     rocks_yield_enemies.on_player_mined_entity(event)
     rocks_yield_ore.on_player_mined_entity(event)
+    trees_yield_ore.on_player_mined_entity(event)
+
+    event.entity.destroy()
 end
 
 local function on_entity_died(entity)

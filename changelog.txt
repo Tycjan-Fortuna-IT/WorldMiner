@@ -19,6 +19,7 @@ Date: XX.XX.2023
     - Banner placeables and items added for future dungeon rooms(different banner for different room type, difficulty, boss, etc...)
     - Variant dispatcher overhaul, now it's more flexible
     - New room variants: 1x2
+    - Trees can yield ore (can be enabled in settings)
   Balancing:
     - Less ore from rocks at the begining (now scales better with distance from center)
     - Ore patches richness improved (now scales better with distance from center)

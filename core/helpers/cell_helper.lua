@@ -1,6 +1,6 @@
 local utils = require("core.utils.utils")
 local config = require("core.config.config")
-local variant_dispather = require("core.variants.variant_dispatcher")
+local variant_dispatcher = require("core.variants.variant_dispatcher")
 
 
 --- Draw a cell by its coordinates
@@ -16,7 +16,7 @@ local function draw_cell_by_coords(cell_coords, direction)
         end
     end
 
-    variant_dispather.place_random_variant(surface, { x = cell_coords.x, y = cell_coords.y }, direction)
+    variant_dispatcher.place_random_variant(surface, { x = cell_coords.x, y = cell_coords.y }, direction)
 
     global.discovered_cells = global.discovered_cells + 1
 end
@@ -46,7 +46,7 @@ local function draw_starting_cell(surface, left_top)
     game.print('Expore world chunk by chunk, mine rock for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
     game.print('You will find chunks with rocks, trees, water, oil, ore veins, enemies and many more! ...', {r = 255, g = 255, b = 50})
 
-    variant_dispather.init()
+    variant_dispatcher.init()
 end
 
 

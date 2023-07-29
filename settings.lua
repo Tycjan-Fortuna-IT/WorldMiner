@@ -47,4 +47,11 @@ data:extend{
         default_value = true,
         order = "e"
     },
+    {
+        type = "bool-setting",
+        name = "trees-yield-ore",
+        setting_type = "startup",
+        default_value = false,
+        order = "f"
+    },
 }
