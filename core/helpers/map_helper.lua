@@ -9,7 +9,8 @@ local config = require("core.config.config")
 local rooms1x1 = require("core.variants.1x1")
 local rocks_yield_enemies = require("core.features.rocks_yield_enemies")
 local trees_yield_ore     = require("core.features.trees_yield_ore")
-
+local loot_helper = require("core.helpers.loot_helper")
+local rocks_yield_loot = require("core.features.rocks_yield_loot")
 ------------------------------------------------------------------------------------
 
 local function on_init(event)
@@ -40,6 +41,8 @@ local function on_chunk_generated(event)
         local center_y = left_top.y + config.grid_size / 2
 
         market.build({ center_x, center_y })
+
+        loot_helper.spawn_chest_with_items({ center_x + 1, center_y + 1 })
 
         return
     end
@@ -129,6 +132,7 @@ local function on_player_mined_entity(event)
     rocks_yield_enemies.on_player_mined_entity(event)
     rocks_yield_ore.on_player_mined_entity(event)
     trees_yield_ore.on_player_mined_entity(event)
+    rocks_yield_loot.on_player_mined_entity(event)
 
     event.entity.destroy()
 end

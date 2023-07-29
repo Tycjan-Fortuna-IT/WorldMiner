@@ -1,3 +1,5 @@
+local C = require("core.utils.constants") 
+
 local config = {
     grid_size = 32, -- should be even
     spawn_dome_size = 10000,
@@ -12,6 +14,7 @@ local config = {
     ore_raffle = {},
     fluid_raffle = {},
     spawn_market_items = {},
+    loot_item_raffle = {},
 
     rock_yield = {
         ['rock-big'] = 1,
@@ -102,6 +105,7 @@ config.on_init = function()
     local ore_raffle_to_use = angels_ore_exists and angels_ore_raffle or base_ore_raffle
     local fluid_raffle_to_use = angels_ore_exists and angels_fluid_raffle or base_fluid_raffle
     local spawn_market_items_to_use = angels_ore_exists and angels_spawn_market_items or base_spawn_market_items
+    local loot_item_raffle_to_use = angels_ore_exists and {} or C.base_loot_item_raffle()
 
     for _, ore in ipairs(ore_raffle_to_use) do
         table.insert(config.ore_raffle, ore)
@@ -113,6 +117,10 @@ config.on_init = function()
 
     for _, offer in ipairs(spawn_market_items_to_use) do
         table.insert(config.spawn_market_items, offer)
+    end
+
+    for _, item in ipairs(loot_item_raffle_to_use) do
+        table.insert(config.loot_item_raffle, item)
     end
 end
 

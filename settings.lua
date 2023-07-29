@@ -49,9 +49,16 @@ data:extend{
     },
     {
         type = "bool-setting",
+        name = "rocks-yield-loot",
+        setting_type = "startup",
+        default_value = true,
+        order = "f"
+    },
+    {
+        type = "bool-setting",
         name = "trees-yield-ore",
         setting_type = "startup",
         default_value = false,
-        order = "f"
+        order = "g"
     },
 }
