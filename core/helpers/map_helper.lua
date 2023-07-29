@@ -16,6 +16,7 @@ local function on_init(event)
     global.discovered_cells = 1
     global.fluids_placed = {}
     global.player_stats = {}
+    global.variants = {}
 
     remote.call("freeplay", "set_disable_crashsite", true)
     remote.call("freeplay", "set_skip_intro", true)
@@ -42,14 +43,23 @@ local function on_chunk_generated(event)
         return
     end
 
+    -- local tiles = {}
+
+    -- for x = 0, config.grid_size - 1, 1 do
+    --     for y = 0, config.grid_size - 1, 1 do
+    --         table.insert(tiles, { name = map_config.void_tile, position = { x = left_top.x + x, y = left_top.y + y } })
+    --     end
+    -- end
+    
+    -- surface.set_tiles(tiles)
+
+    -- More performance friendly, from ~0.040ms - ~0.070ms to ~0.020ms - ~0.040ms
     local tiles = {}
 
-    for x = 0, config.grid_size - 1, 1 do
-        for y = 0, config.grid_size - 1, 1 do
-            tiles[#tiles + 1] = { name = map_config.void_tile, position = { x = left_top.x + x, y = left_top.y + y } }
-        end
+    for i = 0, 1023 do
+        table.insert(tiles, { name = map_config.void_tile, position = { x = left_top.x + i % 32, y = left_top.y + math.floor(i / 32) } })
     end
-
+    
     surface.set_tiles(tiles)
 end
 
@@ -94,13 +104,13 @@ local function on_player_changed_position(event)
     local player_position = utils.get_cell_by_position(player.position)
 
     if player.position.x / map_config.grid_size - player_position.x >= 0.90 then
-        cell_helper.draw_cell_by_coords({ player_position.x + 1, player_position.y })
+        cell_helper.draw_cell_by_coords({ x = player_position.x + 1, y = player_position.y }, defines.direction.east)
     elseif player.position.x / map_config.grid_size - player_position.x <= 0.1 then
-        cell_helper.draw_cell_by_coords({ player_position.x - 1, player_position.y })
+        cell_helper.draw_cell_by_coords({ x = player_position.x - 1, y = player_position.y }, defines.direction.west)
     elseif player.position.y / map_config.grid_size - player_position.y >= 0.90 then
-        cell_helper.draw_cell_by_coords({ player_position.x, player_position.y + 1 })
+        cell_helper.draw_cell_by_coords({ x = player_position.x, y = player_position.y + 1 }, defines.direction.south)
     elseif player.position.y / map_config.grid_size - player_position.y <= 0.1 then
-        cell_helper.draw_cell_by_coords({ player_position.x, player_position.y - 1 })
+        cell_helper.draw_cell_by_coords({ x = player_position.x, y = player_position.y - 1 }, defines.direction.north)
     end
 end
 

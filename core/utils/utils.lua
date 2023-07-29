@@ -1,4 +1,5 @@
 local map_config = require("core.config.config")
+local config = require("core.config.config")
 
 local utils = {}
 
@@ -159,43 +160,6 @@ utils.adjust_weight_based_on_discovered_rooms = function(weight, min_discovered_
     end
 end
 
--- Selects a random room from a table of rooms based on their weights.
---
--- @param rooms The table of rooms to select from.
--- @return The selected room.
---
-utils.select_random_room = function (room_weights)
-    local total_weight = 0
-    local discovered_rooms = global.discovered_cells or 0
-    local valid_rooms = {}
-
-    for _, room_info in pairs(room_weights) do
-        if discovered_rooms >= room_info.min_discovered_rooms then
-            for i = 1, room_info.weight do
-                total_weight = total_weight + 1
-                valid_rooms[total_weight] = room_info.func
-            end
-        end
-    end
-
-    -- Check if any rooms are guaranteed to spawn at certain points
-    for _, room_info in pairs(room_weights) do
-        if #room_info.guaranteed_at > 0 then
-            for _, guaranteed_point in ipairs(room_info.guaranteed_at) do
-                if discovered_rooms == guaranteed_point then
-                    return room_info.func
-                end
-            end
-        end
-    end
-
-    -- Randomly choose a valid room
-    local random_value = math.random(1, total_weight)
-
-    return valid_rooms[random_value]
-end
-
-
 -- Selects a random fluid from a table of fluids that have not yet been placed.
 --
 -- @param tbl The table of fluids to select from.
@@ -211,6 +175,30 @@ utils.select_fluids_not_yet_placed = function (tbl)
     end
 
     return fluids_not_yet_placed
+end
+
+--- Returns the chunk coordinates of a given position.
+--- @param position table - The position to be converted to chunk coordinates.
+--- @return table coordinates of the given position.
+utils.get_chunk_position = function (position)
+    local chunk_position = {}
+
+    position.x = math.floor(position.x, 0)
+    position.y = math.floor(position.y, 0)
+
+    for x = 0, config.grid_size - 1, 1 do
+        if (position.x - x) % config.grid_size == 0 then
+            chunk_position.x = (position.x - x) / config.grid_size
+        end
+    end
+
+    for y = 0, config.grid_size - 1, 1 do
+        if (position.y - y) % config.grid_size == 0 then
+            chunk_position.y = (position.y - y) / config.grid_size
+        end
+    end
+
+    return chunk_position
 end
 
 return utils;

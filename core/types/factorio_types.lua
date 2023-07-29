@@ -75,6 +75,12 @@ local LuaSurface = {
     --- @param params Table
     --- @return nil
     create_entity = function(params) end,
+
+    --- Check if an entity can be placed at a given position.
+    --- @type function
+    --- @param tbl table Table with the following fields: name, position, direction?, force?, build_check_type?, forced?.
+    --- @return boolean
+    can_place_entity = function(tbl) return true end,
 }
 
 --- @class LuaInventory
@@ -166,4 +172,38 @@ local OnPlayerMinedEntityEvent = {
     --- Tick when the event occurred.
     --- @type number
     tick = 0,
+}
+
+-------------------------------------------------------------
+--                        DEFINES
+-------------------------------------------------------------
+
+--- @class defines
+defines = {
+    --- All directions.
+    direction = {
+        --- @type number
+        north = 0,
+        
+        --- @type number
+        northeast = 1,
+        
+        --- @type number
+        east = 2,
+        
+        --- @type number
+        southeast = 3,
+        
+        --- @type number
+        south = 4,
+        
+        --- @type number
+        southwest = 5,
+        
+        --- @type number
+        west = 6,
+        
+        --- @type number
+        northwest = 7,
+    },
 }

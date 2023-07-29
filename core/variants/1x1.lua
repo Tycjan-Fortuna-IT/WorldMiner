@@ -1,41 +1,75 @@
-local get_noise = require('core.utils.noise')
 local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
 local functions = require('core.utils.functions')
-local room = {}
-
 require('core.utils.table')
 
-room.init = function()
+
+---@class Room
+---@field func function Function responsible for creating given room.
+---@field weight number Weight of the variant. Increasing the weight will increase the chance of the variant being used.
+---@field min_discovered_rooms number Minimum number of discovered rooms required for the room to be available.
+---@field max_discovered_rooms number Maximum number of discovered rooms allowed for the room to be available.
+---@field guaranteed_at table Levels at which the room is guaranteed to be used.
+
+---@class Variant1x1
+---@field rooms Room[] Table of rooms.
+local variant1x1 = {}
+
+
+--- Initialize the variant dispatcher, initialaze all rooms
+--- @return nil
+variant1x1.init = function()
     -- TODO make it more random i guess (guaranteed_at is a bit weird)
-    room.room_weights = {
-        { func = room.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  guaranteed_at = { 1 } },
-        { func = room.tons_of_trees, weight = 34,  min_discovered_rooms = 1,  guaranteed_at = { 3 } },
-        { func = room.pond,          weight = 9,   min_discovered_rooms = 5,  guaranteed_at = { 2 } },
-        { func = room.ore_deposit,   weight = 6,   min_discovered_rooms = 10, guaranteed_at = { 5 } },
-        { func = room.nests,         weight = 4,   min_discovered_rooms = 10, guaranteed_at = { 6 } },
-        { func = room.oil,           weight = 1,   min_discovered_rooms = 10, guaranteed_at = { 12, 22, 30 } },
+    variant1x1.rooms = {
+        { func = variant1x1.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 100, guaranteed_at = { 1 } },
+        { func = variant1x1.tons_of_trees, weight = 34,  min_discovered_rooms = 1,  max_discovered_rooms = 100, guaranteed_at = { 3 } },
+        { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 5,  max_discovered_rooms = 100, guaranteed_at = { 2 } },
+        { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 5 } },
+        { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 6 } },
+        { func = variant1x1.oil,           weight = 1,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 12, 22, 30 } },
     }
 end
 
-room.tons_of_rocks = function(surface, cell_left_top, direction)
-    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
+--- Initialize the cells of the room
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.init_cell = function(positions)
+    for _, position in pairs(positions) do
+        local key = utils.coord_to_string({ position.x, position.y })
+        global.map_cells[key] = global.map_cells[key] or {}
+        global.map_cells[key].visited = true
+    end
+end
+
+--- Create a room with tons of rocks
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.tons_of_rocks = function(surface, positions)
+    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, true)
 end
 
-
-room.tons_of_trees = function(surface, cell_left_top, direction)
-    map_functions.draw_spreaded_trees_around(cell_left_top, surface, true)
+--- Create a room with tons of trees
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.tons_of_trees = function(surface, positions)
+    map_functions.draw_spreaded_trees_around(positions[1], surface, true)
 end
 
-room.oil = function(surface, cell_left_top, direction)
+--- Create a room with some oil deposits
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.oil = function(surface, positions)
     local num_of_oils = 3 + math.floor(global.discovered_cells / 100)
-    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
+    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
 
     local fluids = utils.select_fluids_not_yet_placed(config.fluid_raffle)
 
@@ -74,12 +108,16 @@ room.oil = function(surface, cell_left_top, direction)
     end
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
-    map_functions.draw_spreaded_trees_around(cell_left_top, surface, false)
+    map_functions.draw_spreaded_trees_around(positions[1], surface, false)
 end
 
-room.ore_deposit = function(surface, cell_left_top, direction)
+--- Create a room with an ore deposit
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.ore_deposit = function(surface, positions)
     local ore_name = utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
-    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
+    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -95,12 +133,16 @@ room.ore_deposit = function(surface, cell_left_top, direction)
         config.grid_size * 0.3, 1968 * scaling_factor, 0.2, 0.1)
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
-    map_functions.draw_spreaded_trees_around(cell_left_top, surface, false)
+    map_functions.draw_spreaded_trees_around(positions[1], surface, false)
 end
 
-room.pond = function(surface, cell_left_top, direction)
+--- Create a room with a pond
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.pond = function(surface, positions)
     local tree = config.tree_raffle[math.random(1, #config.tree_raffle)]
-    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
+    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -126,10 +168,14 @@ room.pond = function(surface, cell_left_top, direction)
     end
 end
 
-room.nests = function(surface, cell_left_top, direction)
+--- Create a room with nests
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.nests = function(surface, positions)
     local amount = math.ceil(functions.get_biter_amount() * 0.1)
     local tile_positions = {}
-    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
+    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
 
     for x = 0.5, config.grid_size - 0.5, 1 do
         for y = 0.5, config.grid_size - 0.5, 1 do
@@ -157,7 +203,25 @@ room.nests = function(surface, cell_left_top, direction)
     end
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
-    map_functions.draw_spreaded_trees_around(cell_left_top, surface, false)
+    map_functions.draw_spreaded_trees_around(positions[1], surface, false)
 end
 
-return room
+--- Check if available room can be placed at a given position at a given direction.
+--- @param position table - Left top corner of the first cell for the new room
+--- @param direction defines.direction - Direction in which the room will be placed
+--- @return boolean
+variant1x1.can_expand = function (position, direction)
+    -- 1x1 variant has no restrictions
+    return true
+end
+
+--- Get a list of positions where the room can be expanded. If multiple positions are available, set will be chosen randomly.
+--- @param position table - Left top corner of the first cell for the new room
+--- @param direction defines.direction - Direction in which the room will be placed
+--- @return table
+variant1x1.get_random_expandable_positions = function (position, direction)
+    -- 1x1 variant has no multiple positions
+    return { position }
+end
+
+return variant1x1
