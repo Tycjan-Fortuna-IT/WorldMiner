@@ -47,17 +47,6 @@ local function on_chunk_generated(event)
         return
     end
 
-    -- local tiles = {}
-
-    -- for x = 0, config.grid_size - 1, 1 do
-    --     for y = 0, config.grid_size - 1, 1 do
-    --         table.insert(tiles, { name = map_config.void_tile, position = { x = left_top.x + x, y = left_top.y + y } })
-    --     end
-    -- end
-    
-    -- surface.set_tiles(tiles)
-
-    -- More performance friendly, from ~0.040ms - ~0.070ms to ~0.020ms - ~0.040ms
     local tiles = {}
 
     for i = 0, 1023 do

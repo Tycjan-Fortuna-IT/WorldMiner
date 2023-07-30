@@ -24,11 +24,11 @@ variant1x1.init = function()
     -- TODO make it more random i guess (guaranteed_at is a bit weird)
     variant1x1.rooms = {
         { func = variant1x1.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 100, guaranteed_at = { 1 } },
-        { func = variant1x1.tons_of_trees, weight = 34,  min_discovered_rooms = 1,  max_discovered_rooms = 100, guaranteed_at = { 3 } },
-        { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 5,  max_discovered_rooms = 100, guaranteed_at = { 2 } },
-        { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 5 } },
-        { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 6 } },
-        { func = variant1x1.oil,           weight = 1,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 12, 22, 30 } },
+        { func = variant1x1.tons_of_trees, weight = 34,  min_discovered_rooms = 0,  max_discovered_rooms = 100, guaranteed_at = { 2 } },
+        { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 100, guaranteed_at = { 3 } },
+        { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 11 } },
+        { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 12 } },
+        { func = variant1x1.oil,           weight = 1,   min_discovered_rooms = 15, max_discovered_rooms = 100, guaranteed_at = { 16, 25, 37 } },
     }
 end
 
@@ -41,6 +41,8 @@ variant1x1.init_cell = function(positions)
         global.map_cells[key] = global.map_cells[key] or {}
         global.map_cells[key].visited = true
     end
+
+    global.discovered_cells = global.discovered_cells + 1
 end
 
 --- Create a room with tons of rocks
@@ -60,6 +62,10 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.tons_of_trees = function(surface, positions)
+    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+
+    filler_helper.fill_with_base_tile(surface, left_top)
+
     map_functions.draw_spreaded_trees_around(positions[1], surface, true)
 end
 
@@ -141,31 +147,16 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.pond = function(surface, positions)
-    local tree = config.tree_raffle[math.random(1, #config.tree_raffle)]
     local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    map_functions.draw_noise_tile_circle(
-        { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }, 'water', surface,
-        config.grid_size * 0.3)
+    local center = { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }
+    local radius = config.grid_size * 0.3
 
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
-            local pos = { left_top.x + x, left_top.y + y }
-
-            if math.random(1, 16) == 1 then
-                if surface.can_place_entity({ name = 'fish', position = pos, force = 'neutral' }) then
-                    surface.create_entity({ name = 'fish', position = pos, force = 'neutral' })
-                end
-            end
-            if math.random(1, 40) == 1 then
-                if surface.can_place_entity({ name = tree, position = pos, force = 'neutral' }) then
-                    surface.create_entity({ name = tree, position = pos, force = 'neutral' })
-                end
-            end
-        end
-    end
+    map_functions.draw_noise_tile_circle(center, 'water', surface, radius)
+    map_functions.spawn_fish(center, surface, radius)
+    map_functions.draw_spreaded_trees_around(positions[1], surface, false)
 end
 
 --- Create a room with nests

@@ -33,6 +33,8 @@ variant1x2.init_cell = function(positions)
         global.map_cells[key] = global.map_cells[key] or {}
         global.map_cells[key].visited = true
     end
+
+    global.discovered_cells = global.discovered_cells + 2
 end
 
 --- Create a room with tons of rocks
@@ -55,6 +57,10 @@ end
 --- @return nil
 variant1x2.tons_of_trees = function(surface, positions)
     for _, position in pairs(positions) do
+        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+
+        filler_helper.fill_with_base_tile(surface, left_top)
+        
         map_functions.draw_spreaded_trees_around(position, surface, true)
     end
 end
@@ -118,15 +124,7 @@ variant1x2.pond = function(surface, positions)
     end
 
     map_functions.draw_noise_tile_circle(center, 'water', surface, radius)
-
-    local fish_count = math.floor(radius * 2)
-    for i = 1, fish_count do
-        local angle = math.random() * 2 * math.pi
-        local distance = math.random() * radius
-        local x = center.x + distance * math.cos(angle)
-        local y = center.y + distance * math.sin(angle)
-        surface.create_entity({ name = 'fish', position = { x, y } })
-    end
+    map_functions.spawn_fish(center, surface, radius)
 end
 
 --- Create a room with nests
@@ -179,7 +177,7 @@ end
 --- @param direction defines.direction - Direction in which the room will be placed
 --- @return boolean
 variant1x2.can_expand = function (position, direction)
-    for _, offset in pairs(variant1x2.get_offsets(position, direction, true)) do
+    for _, offset in pairs(variant1x2.get_offsets(position, direction)) do
         if variant1x2.can_expand_offset(offset) then
             return true
         end
@@ -192,15 +190,13 @@ end
 --- @param offset table - Offset from the left top corner
 --- @return boolean
 variant1x2.can_expand_offset = function (offset)
-    if not global.map_cells[utils.coord_to_string({ offset.x, offset.y })] then
-        return true
+    for _, offset_pos in pairs(offset) do
+        local cell = global.map_cells[utils.coord_to_string({ offset_pos.x, offset_pos.y })]
+
+        if cell and cell.visited then return false end
     end
 
-    if not global.map_cells[utils.coord_to_string({ offset.x, offset.y })].visited then
-        return true
-    end
-
-    return false
+    return true
 end
 
 --- Get a list of positions where the room can be expanded. If multiple positions are available, set will be chosen randomly.
@@ -210,33 +206,46 @@ end
 variant1x2.get_random_expandable_positions = function (position, direction)
     local available_positions = {}
     
-    for _, offset in pairs(variant1x2.get_offsets(position, direction, false)) do
-        if variant1x2.can_expand(offset, direction) then
-            table.insert(available_positions, offset)
+    for _, offset in pairs(variant1x2.get_offsets(position, direction)) do
+        local expandable_positions = {}
+        for _, offset_pos in pairs(offset) do
+            if variant1x2.can_expand(offset_pos, direction) then
+                table.insert(expandable_positions, offset_pos)
+            else
+                expandable_positions = {}
+                break
+            end
+        end
+        
+        if #expandable_positions > 0 then
+            table.insert(available_positions, expandable_positions)
         end
     end
 
-    return available_positions
+    if #available_positions == 0 then return { position } end
+    
+    return available_positions[math.random(1, #available_positions)]
 end
 
 --- Get a list of offsets where the room can be expanded.
 --- @param position table - Left top corner of the first cell for the new room
 --- @param direction defines.direction - Direction in which the room will be placed
---- @param without_base_offset boolean? - Do include the base offset in the list
 --- @return table
-variant1x2.get_offsets = function (position, direction, without_base_offset)
-    local offsets = lua.ternary(without_base_offset, {}, { { x = position.x, y = position.y } })
+variant1x2.get_offsets = function (position, direction)
+    local offsets = {}
 
-    if direction == defines.direction.north then
-        table.insert(offsets, { x = position.x, y = position.y - 1 })
-    elseif direction == defines.direction.south then
-        table.insert(offsets, { x = position.x, y = position.y + 1 })
-    elseif direction == defines.direction.east then
-        table.insert(offsets, { x = position.x + 1, y = position.y })
-    elseif direction == defines.direction.west then
-        table.insert(offsets, { x = position.x - 1, y = position.y })
-    else
-        error('E0001 - Invalid direction: ' .. direction)
+    local directions = {
+        [defines.direction.north] = {{  1,  0 }, { -1,  0 }, {  0, -1 }},
+        [defines.direction.south] = {{  1,  0 }, { -1,  0 }, {  0,  1 }},
+        [defines.direction.east]  = {{  0, -1 }, {  0,  1 }, {  1,  0 }},
+        [defines.direction.west]  = {{  0, -1 }, {  0,  1 }, { -1,  0 }}
+    }
+
+    for _, offset in pairs(directions[direction]) do
+        local temp = {}
+        table.insert(temp, { x = position.x, y = position.y })
+        table.insert(temp, { x = position.x + offset[1], y = position.y + offset[2] })
+        table.insert(offsets, temp)
     end
 
     return offsets

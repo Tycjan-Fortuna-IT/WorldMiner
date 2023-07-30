@@ -88,8 +88,10 @@ end
 f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
     local seed = game.surfaces[1].map_gen_settings.seed
 
-    local discovered_cells = global.discovered_cells or 0
-    local rocks_spawn_probability = math.min(discovered_cells / 15, 1)
+    local center = { x = cell_left_top.x + config.grid_size * 0.5, y = cell_left_top.y + config.grid_size * 0.5 }    
+    local distance_to_center = math.sqrt(center.x ^ 2 + center.y ^ 2)
+
+    local rocks_spawn_probability = math.min(distance_to_center / 500, 1)
 
     for x = 0.5, config.grid_size - 0.5, 1 do
         for y = 0.5, config.grid_size - 0.5, 1 do
@@ -127,8 +129,6 @@ f.draw_spreaded_trees_around = function (cell_left_top, surface, override)
     local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
     local seed = math.random(1000, 1000000)
 
-    filler_helper.fill_with_base_tile(surface, left_top)
-
     local discovered_cells = global.discovered_cells or 0
     local tree_spawn_probability = math.min(discovered_cells / 20, 1)
 
@@ -144,10 +144,32 @@ f.draw_spreaded_trees_around = function (cell_left_top, surface, override)
                 math.random(1, 3) == 1 and math.random() <= tree_spawn_probability and noise < -0.25
             )
 
+            local tree_entity = { 
+                name = tree,
+                position = pos,
+                force = 'neutral'
+            }
+
             if generate_tree then
-                surface.create_entity({ name = tree, position = pos, force = 'neutral' })
+                if override then
+                    surface.create_entity(tree_entity)
+                elseif surface.can_place_entity(tree_entity) then
+                    surface.create_entity(tree_entity)
+                end
             end
         end
+    end
+end
+
+f.spawn_fish = function (center, surface, radius)
+    local fish_count = math.floor(radius * 2)
+
+    for i = 1, fish_count do
+        local angle = math.random() * 2 * math.pi
+        local distance = math.random() * radius
+        local x = center.x + distance * math.cos(angle)
+        local y = center.y + distance * math.sin(angle)
+        surface.create_entity({ name = 'fish', position = { x, y } })
     end
 end
 

@@ -19,6 +19,8 @@ loot_helper.get_loot_raffle = function ()
 
     local loot = {}
 
+    if #loot_raffle == 0 then return loot end
+
     for i = 1, amount_of_items, 1 do
         local item = loot_raffle[math.random(1, #loot_raffle)]
         table.insert(loot, item)

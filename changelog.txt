@@ -11,14 +11,15 @@ Date: 24.07.2023
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: XX.XX.2023
+  Major Features:
+    - New room variants: 1x2, 1x3, 2x2, 3x3
   Minor Features:
     - Rooms with enemies, ore veins and oil now feel a litle less empty
     - More market items (ore exchange, backpack upgrade, blue coins currency)
     - Rocks now have a chance to drop enemies in different stages of evolution (based on distance from center, can be disabled in settings)
     - Gui can be closed now
-    - Banner placeables and items added for future dungeon rooms(different banner for different room type, difficulty, boss, etc...)
+    - Banner placeables and items added for future dungeon rooms(different banner for different room type, difficulty, boss, etc...), crystal extractor
     - Variant dispatcher overhaul, now it's more flexible
-    - New room variants: 1x2
     - Trees can yield ore (can be enabled in settings)
     - Treasure chests can be found from mining rocks (can be disabled in settings)
   Balancing:

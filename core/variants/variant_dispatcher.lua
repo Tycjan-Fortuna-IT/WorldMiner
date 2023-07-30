@@ -1,7 +1,9 @@
 local rooms1x1 = require("core.variants.1x1")
 local rooms1x2 = require("core.variants.1x2")
-local utils = require("core.utils.utils")
-
+local rooms1x3 = require("core.variants.1x3")
+local rooms2x2 = require("core.variants.2x2")
+local rooms2x3 = require("core.variants.2x3")
+local rooms3x3 = require("core.variants.3x3")
 
 ---@class DispatcherVariant
 ---@field name string Name of a variant.
@@ -10,7 +12,8 @@ local utils = require("core.utils.utils")
 ---@field min_discovered_rooms number Minimum number of discovered variants required for the variant to be available.
 ---@field max_discovered_rooms number Maximum number of discovered variants allowed for the variant to be available.
 ---@field guaranteed_at table Levels at which the variant is guaranteed to be used.
----@field dungeon_at table Levels at which the variant will contain the dungeon.
+
+--- Info: Each room variation (1x1, 1x2, 1x3, etc.) MUST implement methods: init, init_cell, can_expand, get_random_expandable_positions
 
 ---@class Dispatcher
 ---@field variants DispatcherVariant[] Table of variants.
@@ -22,11 +25,19 @@ local dispatcher = {}
 dispatcher.init = function ()
     rooms1x1.init()
     rooms1x2.init()
+    rooms1x3.init()
+    rooms2x2.init()
+    rooms2x3.init()
+    rooms3x3.init()
 
     --- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
     dispatcher.variants = {
-        { name = '1x1', variant = rooms1x1, weight = 5, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 1 }, dungeon_at = { 20 } },
-        { name = '1x2', variant = rooms1x2, weight = 1, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 5 }, dungeon_at = { 20 } }
+        { name = '1x1', variant = rooms1x1, weight = 36, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { name = '1x2', variant = rooms1x2, weight = 12, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 5 } },
+        { name = '1x3', variant = rooms1x3, weight = 9, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 10 } },
+        { name = '2x2', variant = rooms2x2, weight = 5, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 25 } },
+        { name = '2x3', variant = rooms2x3, weight = 3, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 34 } },
+        { name = '3x3', variant = rooms3x3, weight = 2, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 46 } },
     }
 
     for _, variant in pairs(dispatcher.variants) do
@@ -94,7 +105,7 @@ end
 --- @return Room
 dispatcher.select_random_room = function (variant)
     local total_weight = 0
-    local discovered_rooms = global.discovered_cells or 0
+    local discovered_rooms = global.variants[variant.name].discovered_rooms
     local valid_rooms = {}
 
     for _, room_info in pairs(variant.variant.rooms) do

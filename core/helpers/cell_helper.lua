@@ -17,8 +17,6 @@ local function draw_cell_by_coords(cell_coords, direction)
     end
 
     variant_dispatcher.place_random_variant(surface, { x = cell_coords.x, y = cell_coords.y }, direction)
-
-    global.discovered_cells = global.discovered_cells + 1
 end
 
 local function draw_starting_cell(surface, left_top)
