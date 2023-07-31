@@ -2,7 +2,8 @@ local simplex_noise = require 'core.utils.simplex_noise'.d2
 
 local noises = {
     ['tree'] = { { modifier = 0.03, weight = 1 }, { modifier = 0.05, weight = 0.3 }, { modifier = 0.1, weight = 0.05 } },
-    ['stone'] = { { modifier = 0.04, weight = 1 }, { modifier = 0.06, weight = 0.3 }, { modifier = 0.08, weight = 0.1 } }
+    ['stone'] = { { modifier = 0.04, weight = 1 }, { modifier = 0.06, weight = 0.3 }, { modifier = 0.08, weight = 0.1 } },
+    ['scrap'] = { { modifier = 0.04, weight = 1 }, { modifier = 0.06, weight = 0.3 }, { modifier = 0.08, weight = 0.1 } },
 }
 
 local function get_noise(name, pos, seed)

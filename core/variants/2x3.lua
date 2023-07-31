@@ -11,7 +11,12 @@ local variant2x3 = {}
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
 variant2x3.init = function()
-    -- TODO make it more random i guess (guaranteed_at is a bit weird)
+    -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
+    -- func - callback function responsible for creating given room
+    -- Weight - increasing the weight will increase the chance of the variant being used
+    -- Min discovered rooms - minimum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) required for the variant to be available
+    -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
+    -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant2x3.rooms = {
         { func = variant2x3.tons_of_rocks, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
     }

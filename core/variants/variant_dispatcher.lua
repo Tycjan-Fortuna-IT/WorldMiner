@@ -4,6 +4,7 @@ local rooms1x3 = require("core.variants.1x3")
 local rooms2x2 = require("core.variants.2x2")
 local rooms2x3 = require("core.variants.2x3")
 local rooms3x3 = require("core.variants.3x3")
+local variant_dungeon = require("core.variants.dungeon")
 
 ---@class DispatcherVariant
 ---@field name string Name of a variant.
@@ -29,15 +30,23 @@ dispatcher.init = function ()
     rooms2x2.init()
     rooms2x3.init()
     rooms3x3.init()
+    variant_dungeon.init()
 
-    --- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
+    -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
+    -- name - name of the variant
+    -- variant - variant to use, MUST implement methods: init, init_cell, can_expand, get_random_expandable_positions
+    -- weight - increasing the weight will increase the chance of the variant being used
+    -- min discovered rooms - minimum number of TOTAL discovered variants required for the variant to be available
+    -- max discovered rooms - maximum number of TOTAL discovered variants allowed for the variant to be available or 0 for unlimited
+    -- guaranteed at - levels at which the variant is guaranteed to be used (if it can be placed at that position in given direction)
     dispatcher.variants = {
         { name = '1x1', variant = rooms1x1, weight = 36, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { name = '1x2', variant = rooms1x2, weight = 12, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 5 } },
-        { name = '1x3', variant = rooms1x3, weight = 9, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 10 } },
-        { name = '2x2', variant = rooms2x2, weight = 5, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 25 } },
-        { name = '2x3', variant = rooms2x3, weight = 3, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 34 } },
-        { name = '3x3', variant = rooms3x3, weight = 2, min_discovered_rooms = 0, max_discovered_rooms = 0, guaranteed_at = { 46 } },
+        { name = '1x2', variant = rooms1x2, weight = 18, min_discovered_rooms = 12, max_discovered_rooms = 0, guaranteed_at = { 5 } },
+        { name = '1x3', variant = rooms1x3, weight = 9, min_discovered_rooms = 18, max_discovered_rooms = 0, guaranteed_at = { 10 } },
+        { name = '2x2', variant = rooms2x2, weight = 5, min_discovered_rooms = 24, max_discovered_rooms = 0, guaranteed_at = { 25 } },
+        { name = '2x3', variant = rooms2x3, weight = 3, min_discovered_rooms = 33, max_discovered_rooms = 0, guaranteed_at = { 34 } },
+        { name = '3x3', variant = rooms3x3, weight = 2, min_discovered_rooms = 45, max_discovered_rooms = 0, guaranteed_at = { 46 } },
+        { name = 'dungeon', variant = variant_dungeon, weight = 3, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
     }
 
     for _, variant in pairs(dispatcher.variants) do
@@ -63,6 +72,8 @@ dispatcher.place_random_variant = function (surface, position, direction)
     for _, variant_position in pairs(variant_positions) do
         dispatcher.regenerate_decoratives_on_chunk(surface, variant_position)
     end
+
+    global.discovered_rooms = global.discovered_rooms + 1
 end
 
 --- Select a random variant based on weight and internal variant data
@@ -77,7 +88,7 @@ dispatcher.select_random_variant = function (position, direction)
     
     for _, variant in pairs(dispatcher.variants) do
         if 
-            global.variants[variant.name].discovered_rooms >= variant.min_discovered_rooms and
+            global.discovered_rooms >= variant.min_discovered_rooms and
             (
                 variant.max_discovered_rooms == 0 or 
                 global.variants[variant.name].discovered_rooms <= variant.max_discovered_rooms
@@ -109,7 +120,13 @@ dispatcher.select_random_room = function (variant)
     local valid_rooms = {}
 
     for _, room_info in pairs(variant.variant.rooms) do
-        if discovered_rooms >= room_info.min_discovered_rooms then
+        if 
+            discovered_rooms >= room_info.min_discovered_rooms and
+            (
+                room_info.max_discovered_rooms == 0 or 
+                global.variants[variant.name].discovered_rooms <= room_info.max_discovered_rooms
+            )
+        then
             for i = 1, room_info.weight do
                 total_weight = total_weight + 1
                 valid_rooms[total_weight] = room_info.func

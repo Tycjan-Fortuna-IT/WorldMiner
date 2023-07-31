@@ -32,7 +32,7 @@ local config = {
         ['purple-banner'] = 7,
         ['red-banner'] = 8,
         ['black-banner'] = 9,
-    }
+    },
 }
 
 config.on_init = function()

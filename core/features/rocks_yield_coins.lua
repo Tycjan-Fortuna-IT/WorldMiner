@@ -16,9 +16,18 @@ local function on_player_mined_entity(event)
             true
         )
 
-        local text_pos = { event.entity.position.x + 1.5, event.entity.position.y }
+        local text_pos = { event.entity.position.x + 1.25, event.entity.position.y }
 
         event.entity.surface.create_entity({name = 'flying-text', position = text_pos, text = '+' .. amount .. ' [img=item/coin]', color = {r = 200, g = 160, b = 30}})
+    
+        event.entity.surface.create_entity(
+            {
+                name = 'flying-text',
+                position = text_pos,
+                text = '+' .. amount .. ' [img=item/coin]',
+                color = {r = 200, g = 160, b = 30}
+            }
+        )
     end
 end
 

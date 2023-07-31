@@ -2,6 +2,8 @@ local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
+local functions = require('core.utils.functions')
+local get_noise = require('core.utils.noise')
 
 
 ---@class Variant1x3
@@ -11,9 +13,16 @@ local variant1x3 = {}
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
 variant1x3.init = function()
-    -- TODO make it more random i guess (guaranteed_at is a bit weird)
+    -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
+    -- func - callback function responsible for creating given room
+    -- Weight - increasing the weight will increase the chance of the variant being used
+    -- Min discovered rooms - minimum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) required for the variant to be available
+    -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
+    -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant1x3.rooms = {
-        { func = variant1x3.tons_of_rocks, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant1x3.tons_of_rocks, weight = 6, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant1x3.tons_of_trees, weight = 4, min_discovered_rooms = 1,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
+        { func = variant1x3.ore_deposit_with_enemies, weight = 1, min_discovered_rooms = 2,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
     }
 end
 
@@ -43,6 +52,87 @@ variant1x3.tons_of_rocks = function(surface, positions)
 
         map_functions.draw_spreaded_rocks_around(left_top, surface, true)
     end
+end
+
+--- Create a room with tons of trees
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x3.tons_of_trees = function (surface, positions)
+    for _, position in pairs(positions) do
+        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+
+        filler_helper.fill_with_base_tile(surface, left_top)
+
+        map_functions.draw_spreaded_trees_around(position, surface, true)
+    end
+end
+
+--- Create a room with big ore deposit in the middle and enemies around it
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x3.ore_deposit_with_enemies = function (surface, positions)
+    local amount = math.ceil(functions.get_biter_amount() * 0.4)
+    local tile_positions = {}
+
+    for _, position in pairs(positions) do
+        for x = 0.5, config.grid_size - 0.5, 1 do
+            for y = 0.5, config.grid_size - 0.5, 1 do
+                local pos = { position.x * config.grid_size + x, position.y * config.grid_size + y }
+                tile_positions[#tile_positions + 1] = pos
+            end
+        end
+    end
+
+    for _, position in pairs(positions) do
+        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        filler_helper.fill_with_base_tile(surface, left_top)
+    end
+
+    table.shuffle_table(tile_positions)
+
+    for _, pos in pairs(tile_positions) do
+        if surface.can_place_entity({ name = 'spitter-spawner', position = pos }) then
+            if math.random(1, 4) == 1 then
+                surface.create_entity({ name = 'spitter-spawner', position = pos, force = 'enemy' })
+            else
+                surface.create_entity({ name = 'biter-spawner', position = pos, force = 'enemy' })
+            end
+            amount = amount - 1
+        end
+        if amount < 1 then
+            break
+        end
+    end
+
+    local ore_name = utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
+    local center = { x = 0, y = 0 }
+
+    for _, position in pairs(positions) do
+        center.x = center.x + position.x * config.grid_size + config.grid_size * 0.5
+        center.y = center.y + position.y * config.grid_size + config.grid_size * 0.5
+    end
+
+    center.x = center.x / #positions
+    center.y = center.y / #positions
+
+    local radius = math.abs(math.min(center.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center.x + positions[1].x * config.grid_size, center.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center.y + positions[1].y * config.grid_size) * 0.5)
+
+    for _, position in pairs(positions) do
+        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+
+        filler_helper.fill_with_base_tile(surface, left_top)
+
+        map_functions.draw_spreaded_rocks_around(left_top, surface, false)
+        map_functions.draw_spreaded_trees_around(position, surface, false)
+    end
+
+    local distance_to_center = math.sqrt(center.x ^ 2 + center.y ^ 2)
+    local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
+    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 3
+
+    map_functions.draw_irregular_noise_ore_deposit(center, ore_name, surface, radius * 2, 1968 * scaling_factor, 0.2, 0.1)
 end
 
 --- Check if available room can be placed at a given direction.

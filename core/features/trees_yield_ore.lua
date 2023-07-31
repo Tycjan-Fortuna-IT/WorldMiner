@@ -14,7 +14,7 @@ trees_yield_ore.get_amount = function (entity)
         amount = global.rocks_yield_ore_maximum_amount
     end
 
-    local m = (50 + math.random(0, 60)) * 0.01
+    local m = (26 + math.random(0, 60)) * 0.01
 
     amount = math.floor(amount * m)
     if amount < 1 then

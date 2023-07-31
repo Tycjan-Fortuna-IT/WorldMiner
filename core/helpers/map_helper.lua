@@ -16,6 +16,7 @@ local rocks_yield_loot = require("core.features.rocks_yield_loot")
 local function on_init(event)
     global.map_cells = {}
     global.discovered_cells = 1
+    global.discovered_rooms = 1
     global.fluids_placed = {}
     global.player_stats = {}
     global.variants = {}
@@ -42,7 +43,7 @@ local function on_chunk_generated(event)
 
         market.build({ center_x, center_y })
 
-        loot_helper.spawn_chest_with_items({ center_x + 1, center_y + 1 })
+        -- game.players[1].insert({ name = "blue-crystal", count = 2000 })
 
         return
     end
@@ -108,7 +109,7 @@ local function on_player_changed_position(event)
 end
 
 local function on_configuration_changed()
-    game.print('Expore world chunk by chunk, mine rock for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
+    game.print('Expore world chunk by chunk, mine rocks for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
     game.print('You will find chunks with rocks, trees, water, oil, ore veins, enemies and many more! ...', {r = 255, g = 255, b = 50})
 
     rooms1x1.init()

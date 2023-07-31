@@ -21,14 +21,19 @@ local variant1x1 = {}
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
 variant1x1.init = function()
-    -- TODO make it more random i guess (guaranteed_at is a bit weird)
+    -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
+    -- func - callback function responsible for creating given room
+    -- Weight - increasing the weight will increase the chance of the variant being used
+    -- Min discovered rooms - minimum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) required for the variant to be available
+    -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
+    -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant1x1.rooms = {
-        { func = variant1x1.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 100, guaranteed_at = { 1 } },
-        { func = variant1x1.tons_of_trees, weight = 34,  min_discovered_rooms = 0,  max_discovered_rooms = 100, guaranteed_at = { 2 } },
-        { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 100, guaranteed_at = { 3 } },
-        { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 11 } },
-        { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 100, guaranteed_at = { 12 } },
-        { func = variant1x1.oil,           weight = 1,   min_discovered_rooms = 15, max_discovered_rooms = 100, guaranteed_at = { 16, 25, 37 } },
+        { func = variant1x1.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant1x1.tons_of_trees, weight = 34,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
+        { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
+        { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 11 } },
+        { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 12 } },
+        { func = variant1x1.oil,           weight = 1,   min_discovered_rooms = 15, max_discovered_rooms = 0, guaranteed_at = { 16, 25, 37 } },
     }
 end
 

@@ -13,12 +13,17 @@ local variant1x2 = {}
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
 variant1x2.init = function()
-    -- TODO make it more random i guess (guaranteed_at is a bit weird)
+    -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
+    -- func - callback function responsible for creating given room
+    -- Weight - increasing the weight will increase the chance of the variant being used
+    -- Min discovered rooms - minimum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) required for the variant to be available
+    -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
+    -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant1x2.rooms = {
-        { func = variant1x2.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { func = variant1x2.tons_of_trees, weight = 37,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
+        { func = variant1x2.tons_of_rocks, weight = 37, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant1x2.ore_deposit,   weight = 27,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 5 } },
+        { func = variant1x2.tons_of_trees, weight = 14,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
         { func = variant1x2.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
-        { func = variant1x2.ore_deposit,   weight = 6,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 5 } },
         { func = variant1x2.nests,         weight = 4,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 7 } }
     }
 end
@@ -81,7 +86,7 @@ variant1x2.ore_deposit = function(surface, positions)
     center.x = center.x / #positions
     center.y = center.y / #positions
 
-    local radius = math.min(center.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center.x + positions[1].x * config.grid_size, center.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center.y + positions[1].y * config.grid_size) * 0.5
+    local radius = math.abs(math.min(center.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center.x + positions[1].x * config.grid_size, center.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center.y + positions[1].y * config.grid_size) * 0.5)
 
     for _, position in pairs(positions) do
         local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
@@ -112,7 +117,7 @@ variant1x2.pond = function(surface, positions)
     center.x = center.x / #positions
     center.y = center.y / #positions
 
-    local radius = math.min(center.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center.x + positions[1].x * config.grid_size, center.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center.y + positions[1].y * config.grid_size) * 0.5
+    local radius = math.abs(math.min(center.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center.x + positions[1].x * config.grid_size, center.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center.y + positions[1].y * config.grid_size) * 0.5)
 
     for _, position in pairs(positions) do
         local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }

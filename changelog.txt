@@ -12,7 +12,7 @@ Date: 24.07.2023
 Version: 0.1.2
 Date: XX.XX.2023
   Major Features:
-    - New room variants: 1x2, 1x3, 2x2, 3x3
+    - New room variants: 1x2, 1x3, 2x2, 2x3, 3x3
   Minor Features:
     - Rooms with enemies, ore veins and oil now feel a litle less empty
     - More market items (ore exchange, backpack upgrade, blue coins currency)

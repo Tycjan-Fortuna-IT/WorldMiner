@@ -90,3 +90,16 @@ function table.random_key(tbl)
 
     return keys[math.random(#keys)]
 end
+
+--- Returns a random value from a table
+--- @param tbl table
+--- @return any
+function table.random_value(tbl)
+    local values = {}
+
+    for _, v in pairs(tbl) do
+        values[#values + 1] = v
+    end
+
+    return values[math.random(#values)]
+end

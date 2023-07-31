@@ -51,14 +51,15 @@ data:extend{
         type = "bool-setting",
         name = "rocks-yield-loot",
         setting_type = "startup",
-        default_value = true,
-        order = "f"
+        default_value = false,
+        order = "f",
+        hidden  = true
     },
     {
         type = "bool-setting",
         name = "trees-yield-ore",
         setting_type = "startup",
-        default_value = false,
+        default_value = true,
         order = "g"
     },
 }
