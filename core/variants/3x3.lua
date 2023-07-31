@@ -2,6 +2,7 @@ local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
+local lua = require('core.utils.lua')
 
 
 ---@class Variant3x3
@@ -52,7 +53,11 @@ variant3x3.tons_of_rocks = function(surface, positions)
 end
 
 variant3x3.uranium_wasteland = function (surface, positions)
-    local ore_name = 'uranium-ore'
+    local ore_name = lua.ternary(
+        game.entity_prototypes['angels-ore1'], 
+        utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle), 'uranium-ore'
+    )
+
     local center_of_room = { x = 0, y = 0 }
 
     for _, position in pairs(positions) do

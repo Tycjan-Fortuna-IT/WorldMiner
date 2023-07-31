@@ -20,7 +20,6 @@ local variant_dungeon = require("core.variants.dungeon")
 ---@field variants DispatcherVariant[] Table of variants.
 local dispatcher = {}
 
-
 --- Initialize the variant dispatcher, initialaze all variants
 --- @return nil
 dispatcher.init = function ()

@@ -23,16 +23,16 @@ local config = {
     },
 
     banner_raffle = {
-        ['white-banner'] = 1,
-        ['gray-banner'] = 2,
-        ['blue-banner'] = 3,
-        ['yellow-banner'] = 4,
-        ['orange-banner'] = 5,
-        ['green-banner'] = 6,
-        ['purple-banner'] = 7,
-        ['red-banner'] = 8,
-        ['black-banner'] = 9,
-    },
+        'white-banner',
+        'gray-banner',
+        'blue-banner',
+        'yellow-banner',
+        'orange-banner',
+        'green-banner',
+        'purple-banner',
+        'red-banner',
+        'black-banner'
+    }
 }
 
 config.on_init = function()

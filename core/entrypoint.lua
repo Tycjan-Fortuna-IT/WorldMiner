@@ -2,6 +2,7 @@ local map_helper = require("core.helpers.map_helper")
 local gui = require("core.gui.gui")
 
 script.on_init(map_helper.on_init)
+script.on_load(map_helper.on_load)
 script.on_configuration_changed(map_helper.on_configuration_changed)
 
 script.on_event(defines.events.on_entity_died, map_helper.on_entity_died)

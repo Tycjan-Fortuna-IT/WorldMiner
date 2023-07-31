@@ -9,8 +9,8 @@ local config = require("core.config.config")
 local rooms1x1 = require("core.variants.1x1")
 local rocks_yield_enemies = require("core.features.rocks_yield_enemies")
 local trees_yield_ore     = require("core.features.trees_yield_ore")
-local loot_helper = require("core.helpers.loot_helper")
 local rocks_yield_loot = require("core.features.rocks_yield_loot")
+local variant_dispatcher = require("core.variants.variant_dispatcher")
 ------------------------------------------------------------------------------------
 
 local function on_init(event)
@@ -112,9 +112,8 @@ local function on_configuration_changed()
     game.print('Expore world chunk by chunk, mine rocks for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
     game.print('You will find chunks with rocks, trees, water, oil, ore veins, enemies and many more! ...', {r = 255, g = 255, b = 50})
 
-    rooms1x1.init()
-    rocks_yield_ore
-    .on_configuration_changed()
+    variant_dispatcher.init()
+    rocks_yield_ore.on_configuration_changed()
 end
 
 local function on_player_mined_entity(event)
@@ -147,6 +146,7 @@ end
 
 local map_helper = {
     on_init = on_init,
+    on_load = on_load,
     on_configuration_changed = on_configuration_changed,
     on_chunk_generated = on_chunk_generated,
     on_player_changed_position = on_player_changed_position,

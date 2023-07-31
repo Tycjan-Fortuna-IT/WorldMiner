@@ -46,9 +46,16 @@ variant_dungeon.tons_of_rocks = function(surface, positions)
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
+    local x = left_top.x + math.random(8, config.grid_size - 8)
+    local y = left_top.y + math.random(8, config.grid_size - 8)
+
     surface.create_entity({ 
         name = 'dungeon-entrance', 
-        position = { left_top.x + math.random(4, config.grid_size - 4), left_top.y + math.random(4, config.grid_size - 4) } 
+        position = { x, y } 
+    })
+    surface.create_entity({ 
+        name = config.banner_raffle[math.random(#config.banner_raffle)], 
+        position = { x + 4, y + 1 } 
     })
    
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
