@@ -1,0 +1,5 @@
+require ('prototypes.item.blue-coin')
+require ('prototypes.item.blue-crystal')
+require ('prototypes.entity.baner')
+require ('prototypes.building.crystal-extractor')
+require ('prototypes.building.dungeon-entrance')

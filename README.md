@@ -4,6 +4,10 @@
 
 Welcome to the adventurous world of World Miner! Embark on an exciting journey where you'll explore the vast and uncharted lands, chunk by chunk, to uncover precious resources, valuable rocks yielding rare ores, hidden treasures, and lurking dangers. Delve deep into the unknown, mine your way through rocky terrains, and encounter a plethora of surprises that will test your wits and courage.
 
+### Works well with combination of Angel's and Bob's mods (pure Bob's not yet supported).
+
+# **The plan**
+
 **Features:**
 
 1. **Chunk-by-Chunk Exploration:** The mod introduces a unique gameplay mechanic where you'll explore the world one chunk at a time. Each chunk will hold secrets, challenges, and opportunities for resource gathering.
@@ -22,23 +26,17 @@ Welcome to the adventurous world of World Miner! Embark on an exciting journey w
 
 8. **Mod Compatibility:** World Miner is designed to work seamlessly with other popular mods, providing you with even more diverse and thrilling gameplay possibilities.
 
-**Instructions:**
+And many more features to come... like caves, dungeons, and more!
 
-1. Upon starting a new game, the exploration phase begins. Take it slow, explore each chunk, and be attentive to the environment.
+### Known issues
 
-2. Discover valuable rocks that differ from the usual resource nodes. These rocks contain hidden treasures and rich ores.
+Some numbers here and there might need to be tweaked. I'm not sure if the mod is balanced enough, it's still in very early stage. I'm open to suggestions.
 
-3. Utilize your mining skills to extract ores from the valuable rocks. Be cautious of the challenges that may arise during the extraction process.
+### Contributing
 
-4. Unearth hidden treasures scattered across the world. Some treasures may grant you unique abilities or rare items to aid in your adventure.
+If you want to contribute to the mod, I would be happy to accept some suggestions and ideas. Use comments here or directly via github's pull requests or issues.
 
-5. Beware of dangers lurking in the shadows. Hostile creatures and traps may pose a threat to your progress. Stay vigilant and prepare for confrontations.
-
-6. Use the resources you collect to upgrade your tools and equipment. Improved gear will make your exploration and mining more efficient and safer.
-
-7. Plan your routes carefully to optimize your resource gathering. A well-thought-out strategy will help you overcome obstacles and achieve success.
-
-8. Enjoy the dynamic and ever-changing world as each new game provides a different and exciting experience.
+[Link to github repository](https://github.com/Tycjan-Fortuna-IT/WorldMiner)
 
 ### Info
 

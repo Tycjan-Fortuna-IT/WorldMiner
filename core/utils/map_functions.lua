@@ -1,4 +1,8 @@
-local simplex_noise = require 'core.utils.simplex_noise'
+local simplex_noise = require('core.utils.simplex_noise')
+local config = require('core.config.config')
+local get_noise = require('core.utils.noise')
+local filler_helper = require('core.helpers.filler_helper')
+local lua = require('core.utils.lua')
 simplex_noise = simplex_noise.d2
 local f = {}
 local math_random = math.random
@@ -81,5 +85,92 @@ f.draw_irregular_noise_ore_deposit = function(position, name, surface, radius, r
     end
 end
 
+f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
+    local seed = game.surfaces[1].map_gen_settings.seed
+
+    local center = { x = cell_left_top.x + config.grid_size * 0.5, y = cell_left_top.y + config.grid_size * 0.5 }    
+    local distance_to_center = math.sqrt(center.x ^ 2 + center.y ^ 2)
+
+    local rocks_spawn_probability = math.min(distance_to_center / 500, 1)
+
+    for x = 0.5, config.grid_size - 0.5, 1 do
+        for y = 0.5, config.grid_size - 0.5, 1 do
+            local pos = { cell_left_top.x + x, cell_left_top.y + y }
+
+            local noise = get_noise('stone', pos, seed)
+
+            local generate_rock = lua.ternary(
+                settings.startup["generate-more-rocks-from-start"].value, 
+                math.random(1, 3) ~= 1 and (noise > 0.2 or noise < -0.2), 
+                math.random(1, 3) ~= 1 and math.random() <= rocks_spawn_probability and noise > 0.2
+            )
+
+            if generate_rock then
+                local rock_entity = {
+                    name = config.rock_raffle[math.random(1, #config.rock_raffle)],
+                    position = pos,
+                    force = 'neutral'
+                }
+
+                if override then
+                    surface.create_entity(rock_entity)
+                elseif surface.can_place_entity(rock_entity) then
+                    if math.random(1, 15) == 1 then
+                        surface.create_entity(rock_entity)
+                    end
+                end
+            end
+        end
+    end
+end
+
+f.draw_spreaded_trees_around = function (cell_left_top, surface, override)
+    local tree = config.tree_raffle[math.random(1, #config.tree_raffle)]
+    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
+    local seed = math.random(1000, 1000000)
+
+    local discovered_cells = global.discovered_cells or 0
+    local tree_spawn_probability = math.min(discovered_cells / 20, 1)
+
+    for x = 0.5, config.grid_size - 0.5, 1 do
+        for y = 0.5, config.grid_size - 0.5, 1 do
+            local pos = { left_top.x + x, left_top.y + y }
+
+            local noise = get_noise('tree', pos, seed)
+            
+            local generate_tree = lua.ternary(
+                settings.startup["generate-more-trees-from-start"].value, 
+                math.random(1, 3) == 1 and noise > 0.25 or noise < -0.25 , 
+                math.random(1, 3) == 1 and math.random() <= tree_spawn_probability and noise < -0.25
+            )
+
+            local tree_entity = { 
+                name = tree,
+                position = pos,
+                force = 'neutral'
+            }
+
+            if generate_tree then
+                if override then
+                    surface.create_entity(tree_entity)
+                elseif surface.can_place_entity(tree_entity) then
+                    surface.create_entity(tree_entity)
+                end
+            end
+        end
+    end
+end
+
+f.spawn_fish = function (center, surface, radius)
+    local fish_count = math.floor(radius * 2)
+
+    for i = 1, fish_count do
+        local angle = math.random() * 2 * math.pi
+        local distance = math.random() * radius
+        local x = center.x + distance * math.cos(angle)
+        local y = center.y + distance * math.sin(angle)
+        surface.create_entity({ name = 'fish', position = { x, y } })
+    end
+end
 
 return f
