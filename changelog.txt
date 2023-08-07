@@ -6,11 +6,11 @@ Date: 23.07.2023
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 24.07.2023
-  Changes:
+  Bugfixes:
     - Additional fluid variant safety check
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
-Date: XX.XX.2023
+Date: 31.07.2023
   Major Features:
     - New room variants: 1x2, 1x3, 2x2, 2x3, 3x3
   Minor Features:
@@ -26,3 +26,8 @@ Date: XX.XX.2023
     - Less ore from rocks at the begining (now scales better with distance from center)
     - Ore patches richness improved (now scales better with distance from center)
     - Less rocks and trees in rooms (you still can have old quantity by enabling `More Rocks` and `More Trees` settings)
+---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 07.08.2023
+  Bugfixes:
+    - Fixed crash when exploring new rooms after save load

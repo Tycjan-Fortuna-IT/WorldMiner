@@ -23,11 +23,14 @@ local function on_init(event)
 
     remote.call("freeplay", "set_disable_crashsite", true)
     remote.call("freeplay", "set_skip_intro", true)
-    game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 },
-        game.surfaces.nauvis)
+    game.forces['player'].set_spawn_position({ map_config.grid_size / 2 - 5, map_config.grid_size / 2 - 5 }, game.surfaces.nauvis)
 
     map_config.on_init()
     rocks_yield_ore.on_init()
+end
+
+local function on_load()
+    variant_dispatcher.init()
 end
 
 -- without support for custom grid size
