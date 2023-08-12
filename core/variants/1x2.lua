@@ -99,7 +99,7 @@ variant1x2.ore_deposit = function(surface, positions)
 
     local distance_to_center = math.sqrt(center.x ^ 2 + center.y ^ 2)
     local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
-    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 3
+    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
     map_functions.draw_irregular_noise_ore_deposit(center, ore_name, surface, radius * 2, 1968 * scaling_factor, 0.2, 0.1)
 end

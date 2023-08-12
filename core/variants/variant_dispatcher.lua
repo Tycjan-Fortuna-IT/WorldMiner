@@ -45,7 +45,7 @@ dispatcher.init = function ()
         { name = '2x2', variant = rooms2x2, weight = 5, min_discovered_rooms = 24, max_discovered_rooms = 0, guaranteed_at = { 25 } },
         { name = '2x3', variant = rooms2x3, weight = 3, min_discovered_rooms = 33, max_discovered_rooms = 0, guaranteed_at = { 34 } },
         { name = '3x3', variant = rooms3x3, weight = 2, min_discovered_rooms = 45, max_discovered_rooms = 0, guaranteed_at = { 46 } },
-        { name = 'dungeon', variant = variant_dungeon, weight = 3, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
+        { name = 'dungeon', variant = variant_dungeon, weight = 1, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
     }
 
     for _, variant in pairs(dispatcher.variants) do

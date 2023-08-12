@@ -13,14 +13,20 @@ market.build = function(position)
     market.destructible = false
     market.minable = false
 
-    market.add_market_item { price = { { "coin", utils.generate_pickaxe_tier_price(1) } }, offer = {
-        type = 'nothing',
-        effect_description = {'message.pickaxe-upgrade-to-next-tier'}
-    } }
-    market.add_market_item { price = { { "coin", utils.generate_backpack_tier_price(1) } }, offer = {
-        type = 'nothing',
-        effect_description = {'message.backpack-upgrade-to-next-tier'}
-    } }
+    market.add_market_item { 
+        price = { { "coin", utils.generate_pickaxe_tier_price(1) } }, 
+        offer = {
+            type = 'nothing',
+            effect_description = {'message.pickaxe-upgrade-to-next-tier'},
+        } 
+    }
+    market.add_market_item { 
+        price = { { "coin", utils.generate_backpack_tier_price(1) } }, 
+        offer = {
+            type = 'nothing',
+            effect_description = {'message.backpack-upgrade-to-next-tier'}
+        }
+    }
 
     for _, item in pairs(config.spawn_market_items) do
         market.add_market_item(item)

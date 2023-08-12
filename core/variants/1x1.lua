@@ -28,12 +28,12 @@ variant1x1.init = function()
     -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
     -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant1x1.rooms = {
-        { func = variant1x1.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { func = variant1x1.tons_of_trees, weight = 34,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
+        { func = variant1x1.tons_of_rocks, weight = 50, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant1x1.tons_of_trees, weight = 14,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
         { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
         { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 11 } },
         { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 12 } },
-        { func = variant1x1.oil,           weight = 1,   min_discovered_rooms = 15, max_discovered_rooms = 0, guaranteed_at = { 16, 25, 37 } },
+        { func = variant1x1.oil,           weight = 4,   min_discovered_rooms = 15, max_discovered_rooms = 0, guaranteed_at = { 16, 25, 37, 50 } },
     }
 end
 
@@ -137,7 +137,7 @@ variant1x1.ore_deposit = function(surface, positions)
 
     local distance_to_center = math.sqrt(center_x ^ 2 + center_y ^ 2)
     local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
-    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 3
+    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
     map_functions.draw_irregular_noise_ore_deposit(
         { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }, ore_name, surface,

@@ -20,7 +20,7 @@ variant3x3.init = function()
     -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant3x3.rooms = {
         { func = variant3x3.tons_of_rocks, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { func = variant3x3.uranium_wasteland, weight = 1, min_discovered_rooms = 10,  max_discovered_rooms = 0, guaranteed_at = { 11 } },
+        { func = variant3x3.uranium_wasteland, weight = 3, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 11 } },
     }
 end
 
@@ -88,7 +88,7 @@ variant3x3.uranium_wasteland = function (surface, positions)
     
     local distance_to_center = math.sqrt(center_of_room.x ^ 2 + center_of_room.y ^ 2)
     local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
-    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 3
+    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
     map_functions.draw_irregular_noise_ore_deposit(center_of_room, ore_name, surface, radius * 2, 1968 * scaling_factor, 0.2, 0.1)
 end
