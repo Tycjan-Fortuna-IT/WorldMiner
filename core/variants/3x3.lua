@@ -1,4 +1,3 @@
-local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
@@ -44,7 +43,7 @@ end
 --- @return nil
 variant3x3.tons_of_rocks = function(surface, positions)
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
         filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -55,23 +54,23 @@ end
 variant3x3.uranium_wasteland = function (surface, positions)
     local ore_name = lua.ternary(
         game.entity_prototypes['angels-ore1'], 
-        utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle), 'uranium-ore'
+        utils.select_random_first_element_from_tuple_by_weight(global.config.ore_raffle), 'uranium-ore'
     )
 
     local center_of_room = { x = 0, y = 0 }
 
     for _, position in pairs(positions) do
-        center_of_room.x = center_of_room.x + position.x * config.grid_size + config.grid_size * 0.5
-        center_of_room.y = center_of_room.y + position.y * config.grid_size + config.grid_size * 0.5
+        center_of_room.x = center_of_room.x + position.x * global.config.grid_size + global.config.grid_size * 0.5
+        center_of_room.y = center_of_room.y + position.y * global.config.grid_size + global.config.grid_size * 0.5
     end
 
     center_of_room.x = center_of_room.x / #positions
     center_of_room.y = center_of_room.y / #positions
 
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
-        local center = { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }
+        local center = { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }
 
         filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -84,10 +83,10 @@ variant3x3.uranium_wasteland = function (surface, positions)
         map_functions.draw_spreaded_trees_around(position, surface, true)
     end
 
-    local radius = math.abs(math.min(center_of_room.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center_of_room.x + positions[1].x * config.grid_size, center_of_room.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center_of_room.y + positions[1].y * config.grid_size) * 0.5)
+    local radius = math.abs(math.min(center_of_room.x - positions[1].x * global.config.grid_size, (global.config.grid_size * #positions) - center_of_room.x + positions[1].x * global.config.grid_size, center_of_room.y - positions[1].y * global.config.grid_size, (global.config.grid_size * #positions) - center_of_room.y + positions[1].y * global.config.grid_size) * 0.5)
     
     local distance_to_center = math.sqrt(center_of_room.x ^ 2 + center_of_room.y ^ 2)
-    local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
+    local max_distance = math.sqrt((global.config.grid_size * 0.5) ^ 2 + (global.config.grid_size * 0.5) ^ 2)
     local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
     map_functions.draw_irregular_noise_ore_deposit(center_of_room, ore_name, surface, radius * 2, 1968 * scaling_factor, 0.2, 0.1)

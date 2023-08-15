@@ -4,9 +4,12 @@ local coin_yield = {
     ['sand-rock-big'] = 1
 }
 
+
+local rocks_yield_coins = {}
+
 --- On player mined entity. If the entity is a rock, it will yield coins.
 --- @param event OnPlayerMinedEntityEvent
-local function on_player_mined_entity(event)
+rocks_yield_coins.on_player_mined_entity = function (event)
     if coin_yield[event.entity.name] then
         local amount = math.random(math.ceil(coin_yield[event.entity.name] * 0.5), math.ceil(coin_yield[event.entity.name] * 3))
 
@@ -30,9 +33,5 @@ local function on_player_mined_entity(event)
         )
     end
 end
-
-local rocks_yield_coins = {
-    on_player_mined_entity = on_player_mined_entity
-}
 
 return rocks_yield_coins

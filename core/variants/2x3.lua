@@ -1,4 +1,3 @@
-local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
@@ -42,7 +41,7 @@ end
 --- @return nil
 variant2x3.tons_of_rocks = function(surface, positions)
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
         filler_helper.fill_with_base_tile(surface, left_top)
 

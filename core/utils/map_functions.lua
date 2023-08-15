@@ -1,12 +1,10 @@
 local simplex_noise = require('core.utils.simplex_noise')
-local config = require('core.config.config')
 local get_noise = require('core.utils.noise')
-local filler_helper = require('core.helpers.filler_helper')
 local lua = require('core.utils.lua')
 simplex_noise = simplex_noise.d2
+
+
 local f = {}
-local math_random = math.random
-local insert = table.insert
 
 -- Draws a circle of tiles with noise variation around the given position on the surface.
 -- The tiles are set based on a combination of simplex noise to create an irregular shape.
@@ -39,7 +37,7 @@ f.draw_noise_tile_circle = function(position, name, surface, radius)
             local noise = noise_1 + noise_2 * 0.5
             local distance_to_center = math.sqrt(x ^ 2 + y ^ 2)
             if distance_to_center + noise * radius * 0.3 < radius then
-                insert(tiles, { name = name, position = pos })
+                table.insert(tiles, { name = name, position = pos })
             end
         end
     end
@@ -88,13 +86,13 @@ end
 f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
     local seed = game.surfaces[1].map_gen_settings.seed
 
-    local center = { x = cell_left_top.x + config.grid_size * 0.5, y = cell_left_top.y + config.grid_size * 0.5 }    
+    local center = { x = cell_left_top.x + global.config.grid_size * 0.5, y = cell_left_top.y + global.config.grid_size * 0.5 }    
     local distance_to_center = math.sqrt(center.x ^ 2 + center.y ^ 2)
 
     local rocks_spawn_probability = math.min(distance_to_center / 500, 1)
 
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
+    for x = 0.5, global.config.grid_size - 0.5, 1 do
+        for y = 0.5, global.config.grid_size - 0.5, 1 do
             local pos = { cell_left_top.x + x, cell_left_top.y + y }
 
             local noise = get_noise('stone', pos, seed)
@@ -107,7 +105,7 @@ f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
 
             if generate_rock then
                 local rock_entity = {
-                    name = config.rock_raffle[math.random(1, #config.rock_raffle)],
+                    name = global.config.rock_raffle[math.random(1, #global.config.rock_raffle)],
                     position = pos,
                     force = 'neutral'
                 }
@@ -125,15 +123,15 @@ f.draw_spreaded_rocks_around = function (cell_left_top, surface, override)
 end
 
 f.draw_spreaded_trees_around = function (cell_left_top, surface, override)
-    local tree = config.tree_raffle[math.random(1, #config.tree_raffle)]
-    local left_top = { x = cell_left_top.x * config.grid_size, y = cell_left_top.y * config.grid_size }
+    local tree = global.config.tree_raffle[math.random(1, #global.config.tree_raffle)]
+    local left_top = { x = cell_left_top.x * global.config.grid_size, y = cell_left_top.y * global.config.grid_size }
     local seed = math.random(1000, 1000000)
 
     local discovered_cells = global.discovered_cells or 0
     local tree_spawn_probability = math.min(discovered_cells / 20, 1)
 
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
+    for x = 0.5, global.config.grid_size - 0.5, 1 do
+        for y = 0.5, global.config.grid_size - 0.5, 1 do
             local pos = { left_top.x + x, left_top.y + y }
 
             local noise = get_noise('tree', pos, seed)

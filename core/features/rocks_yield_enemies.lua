@@ -1,5 +1,3 @@
-local config = require('core.config.config')
-
 --- On player mined entity. If the entity is a rock, it can yield such enemies.
 --- @type table<number, string[]>
 local rock_inhabitants = {
@@ -41,7 +39,7 @@ rocks_yield_enemies.on_player_mined_entity = function(event)
 
     local entity = event.entity
 
-    if not config.rock_yield[entity.name] then
+    if not global.config.rock_yield[entity.name] then
         return
     end
 
@@ -50,7 +48,7 @@ rocks_yield_enemies.on_player_mined_entity = function(event)
     local surface = game.surfaces[1]
     local pos = { x = entity.position.x, y = entity.position.y }
     local tile_distance_to_center = math.sqrt(pos.x ^ 2 + pos.y ^ 2)
-    local rock_inhabitants_index = math.ceil((tile_distance_to_center - math.sqrt(config.spawn_dome_size)) * 0.005, 0)
+    local rock_inhabitants_index = math.ceil((tile_distance_to_center - math.sqrt(global.config.spawn_dome_size)) * 0.005, 0)
 
     if rock_inhabitants_index < 1 then
         rock_inhabitants_index = 1

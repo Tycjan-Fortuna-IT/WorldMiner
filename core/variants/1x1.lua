@@ -1,4 +1,3 @@
-local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
@@ -55,7 +54,7 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.tons_of_rocks = function(surface, positions)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -67,7 +66,7 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.tons_of_trees = function(surface, positions)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -80,9 +79,9 @@ end
 --- @return nil
 variant1x1.oil = function(surface, positions)
     local num_of_oils = 3 + math.floor(global.discovered_cells / 100)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
-    local fluids = utils.select_fluids_not_yet_placed(config.fluid_raffle)
+    local fluids = utils.select_fluids_not_yet_placed(global.config.fluid_raffle)
 
     local fluid
 
@@ -91,7 +90,7 @@ variant1x1.oil = function(surface, positions)
 
         global.fluids_placed[fluid.name] = true
     else
-        fluid = utils.select_random_element_from_table_by_weight(config.fluid_raffle)
+        fluid = utils.select_random_element_from_table_by_weight(global.config.fluid_raffle)
     end
 
     filler_helper.fill_with_base_tile(surface, left_top)
@@ -99,8 +98,8 @@ variant1x1.oil = function(surface, positions)
     local square_size = 9
 
     for i = 1, num_of_oils do
-        local center_x = left_top.x + config.grid_size * 0.5
-        local center_y = left_top.y + config.grid_size * 0.5
+        local center_x = left_top.x + global.config.grid_size * 0.5
+        local center_y = left_top.y + global.config.grid_size * 0.5
 
         local corner_positions = {
             { x = center_x - square_size / 2, y = center_y - square_size / 2 },
@@ -127,21 +126,21 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.ore_deposit = function(surface, positions)
-    local ore_name = utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local ore_name = utils.select_random_first_element_from_tuple_by_weight(global.config.ore_raffle)
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    local center_x = left_top.x + config.grid_size * 0.5
-    local center_y = left_top.y + config.grid_size * 0.5
+    local center_x = left_top.x + global.config.grid_size * 0.5
+    local center_y = left_top.y + global.config.grid_size * 0.5
 
     local distance_to_center = math.sqrt(center_x ^ 2 + center_y ^ 2)
-    local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
+    local max_distance = math.sqrt((global.config.grid_size * 0.5) ^ 2 + (global.config.grid_size * 0.5) ^ 2)
     local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
     map_functions.draw_irregular_noise_ore_deposit(
-        { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }, ore_name, surface,
-        config.grid_size * 0.3, 1968 * scaling_factor, 0.2, 0.1)
+        { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }, ore_name, surface,
+        global.config.grid_size * 0.3, 1968 * scaling_factor, 0.2, 0.1)
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
     map_functions.draw_spreaded_trees_around(positions[1], surface, false)
@@ -152,12 +151,12 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.pond = function(surface, positions)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    local center = { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }
-    local radius = config.grid_size * 0.3
+    local center = { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }
+    local radius = global.config.grid_size * 0.3
 
     map_functions.draw_noise_tile_circle(center, 'water', surface, radius)
     map_functions.spawn_fish(center, surface, radius)
@@ -171,10 +170,10 @@ end
 variant1x1.nests = function(surface, positions)
     local amount = math.ceil(functions.get_biter_amount() * 0.1)
     local tile_positions = {}
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
+    for x = 0.5, global.config.grid_size - 0.5, 1 do
+        for y = 0.5, global.config.grid_size - 0.5, 1 do
             local pos = { left_top.x + x, left_top.y + y }
             tile_positions[#tile_positions + 1] = pos
         end

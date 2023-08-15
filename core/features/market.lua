@@ -1,7 +1,8 @@
 local utils = require('core.utils.utils')
 local Constants = require('core.utils.constants')
 local Functions = require('core.utils.functions')
-local config = require('core.config.config')
+
+
 local market = {}
 
 --- @param position Table|Tuple
@@ -28,7 +29,7 @@ market.build = function(position)
         }
     }
 
-    for _, item in pairs(config.spawn_market_items) do
+    for _, item in pairs(global.config.spawn_market_items) do
         market.add_market_item(item)
     end
 end

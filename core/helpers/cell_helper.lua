@@ -1,13 +1,14 @@
 local utils = require("core.utils.utils")
-local config = require("core.config.config")
 local variant_dispatcher = require("core.variants.variant_dispatcher")
 
+
+local cell_helper = {}
 
 --- Draw a cell by its coordinates
 --- @param cell_coords table - Coordinates of the cell
 --- @param direction defines.direction - Direciton in which the cell will being drawn
 --- @return nil
-local function draw_cell_by_coords(cell_coords, direction)
+cell_helper.draw_cell_by_coords = function (cell_coords, direction)
     local surface = game.surfaces.nauvis
 
     if global.map_cells[utils.coord_to_string(cell_coords)] then
@@ -19,13 +20,13 @@ local function draw_cell_by_coords(cell_coords, direction)
     variant_dispatcher.place_random_variant(surface, { x = cell_coords.x, y = cell_coords.y }, direction)
 end
 
-local function draw_starting_cell(surface, left_top)
-    for x = 0, config.grid_size - 1, 1 do
-        for y = 0, config.grid_size - 1, 1 do
-            local tile_name = config.void_tile
+cell_helper.draw_starting_cell = function (surface, left_top)
+    for x = 0, global.config.grid_size - 1, 1 do
+        for y = 0, global.config.grid_size - 1, 1 do
+            local tile_name = global.config.void_tile
 
-            if x < config.grid_size and y < config.grid_size then
-                tile_name = config.base_tile
+            if x < global.config.grid_size and y < global.config.grid_size then
+                tile_name = global.config.base_tile
             end
 
             local p = { x = left_top.x + x, y = left_top.y + y }
@@ -46,11 +47,5 @@ local function draw_starting_cell(surface, left_top)
 
     variant_dispatcher.init()
 end
-
-
-local cell_helper = {
-    draw_cell_by_coords = draw_cell_by_coords,
-    draw_starting_cell = draw_starting_cell,
-}
 
 return cell_helper

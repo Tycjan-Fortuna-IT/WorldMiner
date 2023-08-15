@@ -1,6 +1,9 @@
 local constants = require('core.utils.constants')
 
-local function create_cave_miner_stats_toggle_button(player)
+
+local gui = {}
+
+gui.create_cave_miner_stats_toggle_button = function (player)
     if player.gui.top['caver_miner_stats_toggle_button'] then
         player.gui.top['caver_miner_stats_toggle_button'].destroy()
     end
@@ -12,7 +15,7 @@ local function create_cave_miner_stats_toggle_button(player)
     b.style.padding = 1
 end
 
-local function create_cave_miner_stats_gui(player)
+gui.create_cave_miner_stats_gui = function (player)
     if not player.character then
         return
     end
@@ -93,16 +96,16 @@ local function create_cave_miner_stats_gui(player)
     stat_numbers[3].style.minimal_width = 9 * string.len(tostring(global.discovered_cells))
 end
 
-local function refresh_gui()
+gui.refresh_gui = function ()
     for _, player in pairs(game.connected_players) do
-        create_cave_miner_stats_toggle_button(player)
+        gui.create_cave_miner_stats_toggle_button(player)
         if (player.gui.top['caver_miner_stats_frame']) then
-            create_cave_miner_stats_gui(player)
+            gui.create_cave_miner_stats_gui(player)
         end
     end
 end
 
-local function on_gui_click(event)
+gui.on_gui_click = function (event)
     if not event then return end
     if not event.element then return end
     if not event.element.valid then return end
@@ -112,20 +115,14 @@ local function on_gui_click(event)
     local frame = player.gui.top['caver_miner_stats_frame']
 
     if name == 'caver_miner_stats_toggle_button' and frame == nil then
-        create_cave_miner_stats_gui(player)
+        gui.create_cave_miner_stats_gui(player)
     elseif name == 'caver_miner_stats_toggle_button' and frame then
         if player.gui.top['caver_miner_stats_frame'] then
             frame.destroy()
         else
-            create_cave_miner_stats_gui(player)
+            gui.create_cave_miner_stats_gui(player)
         end
     end
 end
-
-local gui = {
-    create_cave_miner_stats_gui = create_cave_miner_stats_gui,
-    refresh_gui = refresh_gui,
-    on_gui_click = on_gui_click
-}
 
 return gui

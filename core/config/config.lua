@@ -35,7 +35,9 @@ local config = {
     }
 }
 
-config.on_init = function()
+config.on_init = function ()
+    global.config = config
+
     config.ore_raffle = {}
     config.fluid_raffle = {}
 

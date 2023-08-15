@@ -1,4 +1,3 @@
-local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
@@ -48,7 +47,7 @@ end
 --- @return nil
 variant1x2.tons_of_rocks = function(surface, positions)
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
         filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -62,7 +61,7 @@ end
 --- @return nil
 variant1x2.tons_of_trees = function(surface, positions)
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
         filler_helper.fill_with_base_tile(surface, left_top)
         
@@ -75,21 +74,21 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x2.ore_deposit = function(surface, positions)
-    local ore_name = utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
+    local ore_name = utils.select_random_first_element_from_tuple_by_weight(global.config.ore_raffle)
     local center = { x = 0, y = 0 }
 
     for _, position in pairs(positions) do
-        center.x = center.x + position.x * config.grid_size + config.grid_size * 0.5
-        center.y = center.y + position.y * config.grid_size + config.grid_size * 0.5
+        center.x = center.x + position.x * global.config.grid_size + global.config.grid_size * 0.5
+        center.y = center.y + position.y * global.config.grid_size + global.config.grid_size * 0.5
     end
 
     center.x = center.x / #positions
     center.y = center.y / #positions
 
-    local radius = math.abs(math.min(center.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center.x + positions[1].x * config.grid_size, center.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center.y + positions[1].y * config.grid_size) * 0.5)
+    local radius = math.abs(math.min(center.x - positions[1].x * global.config.grid_size, (global.config.grid_size * #positions) - center.x + positions[1].x * global.config.grid_size, center.y - positions[1].y * global.config.grid_size, (global.config.grid_size * #positions) - center.y + positions[1].y * global.config.grid_size) * 0.5)
 
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
         filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -98,7 +97,7 @@ variant1x2.ore_deposit = function(surface, positions)
     end
 
     local distance_to_center = math.sqrt(center.x ^ 2 + center.y ^ 2)
-    local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
+    local max_distance = math.sqrt((global.config.grid_size * 0.5) ^ 2 + (global.config.grid_size * 0.5) ^ 2)
     local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
     map_functions.draw_irregular_noise_ore_deposit(center, ore_name, surface, radius * 2, 1968 * scaling_factor, 0.2, 0.1)
@@ -111,16 +110,16 @@ end
 variant1x2.pond = function(surface, positions)
     local center = { x = 0, y = 0 }
     for _, position in pairs(positions) do
-        center.x = center.x + position.x * config.grid_size + config.grid_size * 0.5
-        center.y = center.y + position.y * config.grid_size + config.grid_size * 0.5
+        center.x = center.x + position.x * global.config.grid_size + global.config.grid_size * 0.5
+        center.y = center.y + position.y * global.config.grid_size + global.config.grid_size * 0.5
     end
     center.x = center.x / #positions
     center.y = center.y / #positions
 
-    local radius = math.abs(math.min(center.x - positions[1].x * config.grid_size, (config.grid_size * #positions) - center.x + positions[1].x * config.grid_size, center.y - positions[1].y * config.grid_size, (config.grid_size * #positions) - center.y + positions[1].y * config.grid_size) * 0.5)
+    local radius = math.abs(math.min(center.x - positions[1].x * global.config.grid_size, (global.config.grid_size * #positions) - center.x + positions[1].x * global.config.grid_size, center.y - positions[1].y * global.config.grid_size, (global.config.grid_size * #positions) - center.y + positions[1].y * global.config.grid_size) * 0.5)
 
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
         filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -141,16 +140,16 @@ variant1x2.nests = function(surface, positions)
     local tile_positions = {}
 
     for _, position in pairs(positions) do
-        for x = 0.5, config.grid_size - 0.5, 1 do
-            for y = 0.5, config.grid_size - 0.5, 1 do
-                local pos = { position.x * config.grid_size + x, position.y * config.grid_size + y }
+        for x = 0.5, global.config.grid_size - 0.5, 1 do
+            for y = 0.5, global.config.grid_size - 0.5, 1 do
+                local pos = { position.x * global.config.grid_size + x, position.y * global.config.grid_size + y }
                 tile_positions[#tile_positions + 1] = pos
             end
         end
     end
 
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
         filler_helper.fill_with_base_tile(surface, left_top)
     end
 
@@ -171,7 +170,7 @@ variant1x2.nests = function(surface, positions)
     end
 
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
         map_functions.draw_spreaded_rocks_around(left_top, surface, false)
         map_functions.draw_spreaded_trees_around(left_top, surface, false)
     end
