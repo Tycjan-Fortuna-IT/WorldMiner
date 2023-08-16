@@ -4,6 +4,9 @@ local rooms1x3 = require("core.variants.1x3")
 local rooms2x2 = require("core.variants.2x2")
 local rooms2x3 = require("core.variants.2x3")
 local rooms3x3 = require("core.variants.3x3")
+local roomsO = require("core.variants.O")
+local roomsL = require("core.variants.L")
+local roomsT = require("core.variants.T")
 local variant_dungeon = require("core.variants.dungeon")
 
 ---@class DispatcherVariant
@@ -29,6 +32,9 @@ dispatcher.init = function ()
     rooms2x2.init()
     rooms2x3.init()
     rooms3x3.init()
+    roomsO.init()
+    roomsL.init()
+    roomsT.init()
     variant_dungeon.init()
 
     -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
@@ -45,6 +51,9 @@ dispatcher.init = function ()
         { name = '2x2', variant = rooms2x2, weight = 5, min_discovered_rooms = 24, max_discovered_rooms = 0, guaranteed_at = { 25 } },
         { name = '2x3', variant = rooms2x3, weight = 3, min_discovered_rooms = 33, max_discovered_rooms = 0, guaranteed_at = { 34 } },
         { name = '3x3', variant = rooms3x3, weight = 2, min_discovered_rooms = 45, max_discovered_rooms = 0, guaranteed_at = { 46 } },
+        { name = 'O', variant = roomsO, weight = 2, min_discovered_rooms = 54, max_discovered_rooms = 0, guaranteed_at = { 55 } },
+        { name = 'L', variant = roomsL, weight = 2, min_discovered_rooms = 59, max_discovered_rooms = 0, guaranteed_at = { 60 } },
+        { name = 'T', variant = roomsT, weight = 60, min_discovered_rooms = 64, max_discovered_rooms = 0, guaranteed_at = { 65 } },
         { name = 'dungeon', variant = variant_dungeon, weight = 1, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
     }
 
