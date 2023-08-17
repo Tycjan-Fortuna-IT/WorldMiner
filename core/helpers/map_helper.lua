@@ -32,7 +32,7 @@ map_helper.on_init = function (event)
 end
 
 map_helper.on_load = function ()
-    variant_dispatcher.init()
+    variant_dispatcher.on_load()
 end
 
 map_helper.on_chunk_generated = function(event)
@@ -81,7 +81,7 @@ map_helper.on_configuration_changed = function ()
 
     if not global.config then config.on_init() end
 
-    variant_dispatcher.init()
+    variant_dispatcher.on_init()
     rocks_yield_ore.on_configuration_changed()
 end
 

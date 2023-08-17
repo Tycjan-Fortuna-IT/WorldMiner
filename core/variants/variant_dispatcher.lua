@@ -25,17 +25,27 @@ local dispatcher = {}
 
 --- Initialize the variant dispatcher, initialaze all variants
 --- @return nil
-dispatcher.init = function ()
-    rooms1x1.init()
-    rooms1x2.init()
-    rooms1x3.init()
-    rooms2x2.init()
-    rooms2x3.init()
-    rooms3x3.init()
-    roomsO.init()
-    roomsL.init()
-    roomsT.init()
-    variant_dungeon.init()
+dispatcher.on_init = function ()
+    dispatcher.on_load()
+
+    for _, variant in pairs(dispatcher.variants) do
+        global.variants[variant.name] = global.variants[variant.name] or { discovered_rooms = 1 }
+    end
+end
+
+--- Load all variants
+--- @return nil
+dispatcher.on_load = function ()
+    rooms1x1.on_init()
+    rooms1x2.on_init()
+    rooms1x3.on_init()
+    rooms2x2.on_init()
+    rooms2x3.on_init()
+    rooms3x3.on_init()
+    roomsO.on_init()
+    roomsL.on_init()
+    roomsT.on_init()
+    variant_dungeon.on_init()
 
     -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
     -- name - name of the variant
@@ -56,10 +66,6 @@ dispatcher.init = function ()
         { name = 'T', variant = roomsT, weight = 60, min_discovered_rooms = 64, max_discovered_rooms = 0, guaranteed_at = { 65 } },
         { name = 'dungeon', variant = variant_dungeon, weight = 1, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
     }
-
-    for _, variant in pairs(dispatcher.variants) do
-        global.variants[variant.name] = global.variants[variant.name] or { discovered_rooms = 1 }
-    end
 end
 
 --- Place a random variant in the given direction on a given position

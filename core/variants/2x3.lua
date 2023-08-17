@@ -9,7 +9,7 @@ local variant2x3 = {}
 
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
-variant2x3.init = function()
+variant2x3.on_init = function()
     -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
     -- func - callback function responsible for creating given room
     -- Weight - increasing the weight will increase the chance of the variant being used
