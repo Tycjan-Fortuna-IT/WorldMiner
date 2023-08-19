@@ -76,9 +76,6 @@ map_helper.on_player_changed_position = function (event)
 end
 
 map_helper.on_configuration_changed = function ()
-    game.print('Expore world chunk by chunk, mine rocks for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
-    game.print('You will find chunks with rocks, trees, water, oil, ore veins, enemies and many more! ...', {r = 255, g = 255, b = 50})
-
     if not global.config then config.on_init() end
 
     variant_dispatcher.on_init()
@@ -104,13 +101,18 @@ map_helper.on_market_item_purchased = function (event)
 end
 
 map_helper.on_tick = function (event)
-    if game.tick % 300 == 0 then
-        gui.refresh_gui()
-    end
+    -- TODO Make gui refresh-able
+    -- if game.tick % 300 == 0 then
+    --     gui.refresh()
+    -- end
 end
 
 map_helper.on_gui_click = function (event)
-    gui.on_gui_click(event)
+    gui.on_click(event)
+end
+
+map_helper.on_player_joined_game = function (event)
+    gui.refresh()
 end
 
 return map_helper;

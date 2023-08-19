@@ -42,9 +42,6 @@ cell_helper.draw_starting_cell = function (surface, left_top)
     global.map_cells[utils.coord_to_string({ 0, 0 })] = global.map_cells[utils.coord_to_string({ 0, 0 })] or {}
     global.map_cells[utils.coord_to_string({ 0, 0 })].visited = true
 
-    game.print('Expore world chunk by chunk, mine rocks for resources/coins, and build your factory!', {r = 255, g = 255, b = 50})
-    game.print('You will find chunks with rocks, trees, water, oil, ore veins, enemies and many more! ...', {r = 255, g = 255, b = 50})
-
     variant_dispatcher.on_init()
 end
 

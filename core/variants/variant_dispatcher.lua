@@ -63,7 +63,7 @@ dispatcher.on_load = function ()
         { name = '3x3', variant = rooms3x3, weight = 2, min_discovered_rooms = 45, max_discovered_rooms = 0, guaranteed_at = { 46 } },
         { name = 'O', variant = roomsO, weight = 2, min_discovered_rooms = 54, max_discovered_rooms = 0, guaranteed_at = { 55 } },
         { name = 'L', variant = roomsL, weight = 2, min_discovered_rooms = 59, max_discovered_rooms = 0, guaranteed_at = { 60 } },
-        { name = 'T', variant = roomsT, weight = 60, min_discovered_rooms = 64, max_discovered_rooms = 0, guaranteed_at = { 65 } },
+        { name = 'T', variant = roomsT, weight = 2, min_discovered_rooms = 64, max_discovered_rooms = 0, guaranteed_at = { 65 } },
         { name = 'dungeon', variant = variant_dungeon, weight = 1, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
     }
 end
@@ -79,6 +79,7 @@ dispatcher.place_random_variant = function (surface, position, direction)
 
     dispatcher.select_random_room(variant)(surface, variant_positions)
 
+    global.variants[variant.name] = global.variants[variant.name] or { discovered_rooms = 1 }
     global.variants[variant.name].discovered_rooms = global.variants[variant.name].discovered_rooms + 1
 
     variant.variant.init_cell(variant_positions)
