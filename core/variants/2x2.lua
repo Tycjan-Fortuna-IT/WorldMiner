@@ -1,7 +1,7 @@
-local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
+local functions = require('core.utils.functions')
 
 
 ---@class Variant2x2
@@ -10,7 +10,7 @@ local varant2x2 = {}
 
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
-varant2x2.init = function()
+varant2x2.on_init = function()
     -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
     -- func - callback function responsible for creating given room
     -- Weight - increasing the weight will increase the chance of the variant being used
@@ -19,6 +19,7 @@ varant2x2.init = function()
     -- Guaranteed at - levels at which the variant is guaranteed to be used
     varant2x2.rooms = {
         { func = varant2x2.tons_of_rocks, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = varant2x2.hostile_ore_deposit, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
     }
 end
 
@@ -42,12 +43,86 @@ end
 --- @return nil
 varant2x2.tons_of_rocks = function(surface, positions)
     for _, position in pairs(positions) do
-        local left_top = { x = position.x * config.grid_size, y = position.y * config.grid_size }
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
         filler_helper.fill_with_base_tile(surface, left_top)
 
         map_functions.draw_spreaded_rocks_around(left_top, surface, true)
     end
+end
+
+--- Create a room with an ore deposit and enemies
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil 
+varant2x2.hostile_ore_deposit = function(surface, positions)
+    local amount = math.ceil(functions.get_biter_amount() * 0.5)
+    local tile_positions = {}
+
+    for _, position in pairs(positions) do
+        for x = 0.5, global.config.grid_size - 0.5, 1 do
+            for y = 0.5, global.config.grid_size - 0.5, 1 do
+                local pos = { position.x * global.config.grid_size + x, position.y * global.config.grid_size + y }
+                tile_positions[#tile_positions + 1] = pos
+            end
+        end
+    end
+
+    for _, position in pairs(positions) do
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
+        filler_helper.fill_with_base_tile(surface, left_top)
+    end
+
+    table.shuffle_table(tile_positions)
+
+    for _, pos in pairs(tile_positions) do
+        if surface.can_place_entity({ name = 'spitter-spawner', position = pos }) then
+            if math.random(1, 4) == 1 then
+                surface.create_entity({ name = 'spitter-spawner', position = pos, force = 'enemy' })
+            else
+                surface.create_entity({ name = 'biter-spawner', position = pos, force = 'enemy' })
+            end
+            amount = amount - 1
+        end
+        if amount < 1 then
+            break
+        end
+    end
+
+    local ore_name = utils.select_random_first_element_from_tuple_by_weight(global.config.ore_raffle)
+    local center_of_room = { x = 0, y = 0 }
+
+    for _, position in pairs(positions) do
+        center_of_room.x = center_of_room.x + position.x * global.config.grid_size + global.config.grid_size * 0.5
+        center_of_room.y = center_of_room.y + position.y * global.config.grid_size + global.config.grid_size * 0.5
+    end
+    
+    center_of_room.x = center_of_room.x / #positions
+    center_of_room.y = center_of_room.y / #positions
+    
+    for _, position in pairs(positions) do
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
+
+        local center = { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }
+
+        filler_helper.fill_with_base_tile(surface, left_top)
+
+        if surface.can_place_entity({name = 'gun-turret', position = center}) then
+            local e = surface.create_entity({name = 'gun-turret', position = center, force = 'enemy'})
+            e.insert({name = 'piercing-rounds-magazine', count = math.random(16, 64)})
+        end
+
+        map_functions.draw_spreaded_rocks_around(left_top, surface, false)
+        map_functions.draw_spreaded_trees_around(position, surface, false)
+    end
+    
+    local radius = 32
+
+    local distance_to_center = math.sqrt(center_of_room.x ^ 2 + center_of_room.y ^ 2)
+    local max_distance = math.sqrt((global.config.grid_size * 0.5) ^ 2 + (global.config.grid_size * 0.5) ^ 2)
+    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 4.5
+
+    map_functions.draw_irregular_noise_ore_deposit(center_of_room, ore_name, surface, radius, 1968 * scaling_factor, 0.2, 0.1)
 end
 
 --- Check if available room can be placed at a given direction.

@@ -1,4 +1,3 @@
-local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
@@ -20,7 +19,7 @@ local variant1x1 = {}
 
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
-variant1x1.init = function()
+variant1x1.on_init = function()
     -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
     -- func - callback function responsible for creating given room
     -- Weight - increasing the weight will increase the chance of the variant being used
@@ -28,12 +27,13 @@ variant1x1.init = function()
     -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
     -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant1x1.rooms = {
-        { func = variant1x1.tons_of_rocks, weight = 100, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { func = variant1x1.tons_of_trees, weight = 34,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
-        { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
-        { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 11 } },
-        { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 12 } },
-        { func = variant1x1.oil,           weight = 1,   min_discovered_rooms = 15, max_discovered_rooms = 0, guaranteed_at = { 16, 25, 37 } },
+        { func = variant1x1.tons_of_rocks,     weight = 1, min_discovered_rooms = 0,   max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant1x1.tons_of_trees,     weight = 14, min_discovered_rooms = 0,   max_discovered_rooms = 0, guaranteed_at = { 2 } },
+        { func = variant1x1.pond,              weight = 9,  min_discovered_rooms = 0,   max_discovered_rooms = 0, guaranteed_at = { 3 } },
+        { func = variant1x1.mixed_ore_deposit, weight = 1,  min_discovered_rooms = 0,   max_discovered_rooms = 50, guaranteed_at = { 5, 7 } },
+        { func = variant1x1.ore_deposit,       weight = 6,  min_discovered_rooms = 10,  max_discovered_rooms = 0, guaranteed_at = { 11 } },
+        { func = variant1x1.nests,             weight = 4,  min_discovered_rooms = 10,  max_discovered_rooms = 0, guaranteed_at = { 12 } },
+        { func = variant1x1.oil,               weight = 1,  min_discovered_rooms = 25,  max_discovered_rooms = 0, guaranteed_at = { 37, 55, 78 } },
     }
 end
 
@@ -55,7 +55,7 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.tons_of_rocks = function(surface, positions)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -67,7 +67,7 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.tons_of_trees = function(surface, positions)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
@@ -79,10 +79,9 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.oil = function(surface, positions)
-    local num_of_oils = 3 + math.floor(global.discovered_cells / 100)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
-    local fluids = utils.select_fluids_not_yet_placed(config.fluid_raffle)
+    local fluids = utils.select_fluids_not_yet_placed(global.config.fluid_raffle)
 
     local fluid
 
@@ -91,33 +90,17 @@ variant1x1.oil = function(surface, positions)
 
         global.fluids_placed[fluid.name] = true
     else
-        fluid = utils.select_random_element_from_table_by_weight(config.fluid_raffle)
+        fluid = utils.select_random_element_from_table_by_weight(global.config.fluid_raffle)
     end
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    local square_size = 9
+    local center = {
+        x = left_top.x + global.config.grid_size * 0.5,
+        y = left_top.y + global.config.grid_size * 0.5
+    }
 
-    for i = 1, num_of_oils do
-        local center_x = left_top.x + config.grid_size * 0.5
-        local center_y = left_top.y + config.grid_size * 0.5
-
-        local corner_positions = {
-            { x = center_x - square_size / 2, y = center_y - square_size / 2 },
-            { x = center_x + square_size / 2, y = center_y - square_size / 2 },
-            { x = center_x - square_size / 2, y = center_y + square_size / 2 },
-            { x = center_x + square_size / 2, y = center_y + square_size / 2 }
-        }
-
-        for _, corner_position in ipairs(corner_positions) do
-            surface.create_entity({
-                name = fluid and fluid.name or 'crude-oil',
-                position = corner_position,
-                amount = 10000 + global.discovered_cells * 400 * (fluid and fluid.scale or 100)
-            })
-        end
-    end
-
+    map_functions.draw_oil_circle(center, fluid and fluid.name or 'crude-oil', surface, 16, 10000 + global.discovered_cells * 350 * (fluid and fluid.scale or 100))
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
     map_functions.draw_spreaded_trees_around(positions[1], surface, false)
 end
@@ -127,24 +110,39 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.ore_deposit = function(surface, positions)
-    local ore_name = utils.select_random_first_element_from_tuple_by_weight(config.ore_raffle)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local ore_name = utils.select_random_first_element_from_tuple_by_weight(global.config.ore_raffle)
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    local center_x = left_top.x + config.grid_size * 0.5
-    local center_y = left_top.y + config.grid_size * 0.5
+    local center_x = left_top.x + global.config.grid_size * 0.5
+    local center_y = left_top.y + global.config.grid_size * 0.5
 
     local distance_to_center = math.sqrt(center_x ^ 2 + center_y ^ 2)
-    local max_distance = math.sqrt((config.grid_size * 0.5) ^ 2 + (config.grid_size * 0.5) ^ 2)
-    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 3
+    local max_distance = math.sqrt((global.config.grid_size * 0.5) ^ 2 + (global.config.grid_size * 0.5) ^ 2)
+    local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
     map_functions.draw_irregular_noise_ore_deposit(
-        { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }, ore_name, surface,
-        config.grid_size * 0.3, 1968 * scaling_factor, 0.2, 0.1)
+        { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }, ore_name, surface,
+        global.config.grid_size * 0.3, 1968 * scaling_factor, 0.2, 0.1)
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
     map_functions.draw_spreaded_trees_around(positions[1], surface, false)
+end
+
+--- Create a room with a rainbow patch
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.mixed_ore_deposit = function (surface, positions)
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
+
+    filler_helper.fill_with_base_tile(surface, left_top)
+
+    local center = { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }
+    local radius = global.config.grid_size * 0.4
+
+    map_functions.draw_mixed_ore_patch(center, surface, radius, 3000)
 end
 
 --- Create a room with a pond
@@ -152,12 +150,12 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.pond = function(surface, positions)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    local center = { x = left_top.x + config.grid_size * 0.5, y = left_top.y + config.grid_size * 0.5 }
-    local radius = config.grid_size * 0.3
+    local center = { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }
+    local radius = global.config.grid_size * 0.3
 
     map_functions.draw_noise_tile_circle(center, 'water', surface, radius)
     map_functions.spawn_fish(center, surface, radius)
@@ -171,10 +169,10 @@ end
 variant1x1.nests = function(surface, positions)
     local amount = math.ceil(functions.get_biter_amount() * 0.1)
     local tile_positions = {}
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
-    for x = 0.5, config.grid_size - 0.5, 1 do
-        for y = 0.5, config.grid_size - 0.5, 1 do
+    for x = 0.5, global.config.grid_size - 0.5, 1 do
+        for y = 0.5, global.config.grid_size - 0.5, 1 do
             local pos = { left_top.x + x, left_top.y + y }
             tile_positions[#tile_positions + 1] = pos
         end

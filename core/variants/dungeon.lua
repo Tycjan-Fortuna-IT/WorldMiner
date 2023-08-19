@@ -1,4 +1,3 @@
-local config = require('core.config.config')
 local map_functions = require('core.utils.map_functions')
 local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
@@ -12,7 +11,7 @@ local variant_dungeon = {}
 
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
-variant_dungeon.init = function()
+variant_dungeon.on_init = function()
     -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
     -- func - callback function responsible for creating given room
     -- Weight - increasing the weight will increase the chance of the variant being used
@@ -42,19 +41,19 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant_dungeon.tons_of_rocks = function(surface, positions)
-    local left_top = { x = positions[1].x * config.grid_size, y = positions[1].y * config.grid_size }
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    local x = left_top.x + math.random(8, config.grid_size - 8)
-    local y = left_top.y + math.random(8, config.grid_size - 8)
+    local x = left_top.x + math.random(8, global.config.grid_size - 8)
+    local y = left_top.y + math.random(8, global.config.grid_size - 8)
 
     surface.create_entity({ 
         name = 'dungeon-entrance', 
         position = { x, y } 
     })
     surface.create_entity({ 
-        name = config.banner_raffle[math.random(#config.banner_raffle)], 
+        name = global.config.banner_raffle[math.random(#global.config.banner_raffle)], 
         position = { x + 4, y + 1 } 
     })
    

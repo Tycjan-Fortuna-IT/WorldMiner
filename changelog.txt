@@ -31,3 +31,12 @@ Version: 0.1.3
 Date: 07.08.2023
   Bugfixes:
     - Fixed crash when exploring new rooms after save load
+---------------------------------------------------------------------------------------------------
+Version: 0.1.4
+Date: 19.08.2023
+  Bugfixes:
+    - Fixed problems with config table and variant dispatcher not working correctly after save load
+  Major Features:
+    - New room variants: L-shape, T-shape, O-shape
+    - Oil room improvements
+    - GUI improvements

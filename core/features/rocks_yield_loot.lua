@@ -1,5 +1,3 @@
-local loot_helper = require('core.helpers.loot_helper')
-local config = require('core.config.config')
 local rocks_yield_loot = {}
 
 

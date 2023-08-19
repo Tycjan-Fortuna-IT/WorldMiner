@@ -1,6 +1,3 @@
-local map_config = require("core.config.config")
-local config = require("core.config.config")
-
 local utils = {}
 
 ---
@@ -45,8 +42,8 @@ end
 -- @return The cell coordinates of the given position.
 --
 utils.get_cell_by_position = function (pos)
-    local x = math.floor(pos.x / map_config.grid_size)
-    local y = math.floor(pos.y / map_config.grid_size)
+    local x = math.floor(pos.x / global.config.grid_size)
+    local y = math.floor(pos.y / global.config.grid_size)
 
     return { x = x, y = y }
 end
@@ -186,15 +183,15 @@ utils.get_chunk_position = function (position)
     position.x = math.floor(position.x, 0)
     position.y = math.floor(position.y, 0)
 
-    for x = 0, config.grid_size - 1, 1 do
-        if (position.x - x) % config.grid_size == 0 then
-            chunk_position.x = (position.x - x) / config.grid_size
+    for x = 0, global.config.grid_size - 1, 1 do
+        if (position.x - x) % global.config.grid_size == 0 then
+            chunk_position.x = (position.x - x) / global.config.grid_size
         end
     end
 
-    for y = 0, config.grid_size - 1, 1 do
-        if (position.y - y) % config.grid_size == 0 then
-            chunk_position.y = (position.y - y) / config.grid_size
+    for y = 0, global.config.grid_size - 1, 1 do
+        if (position.y - y) % global.config.grid_size == 0 then
+            chunk_position.y = (position.y - y) / global.config.grid_size
         end
     end
 

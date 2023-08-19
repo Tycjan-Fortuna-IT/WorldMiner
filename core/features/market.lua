@@ -1,7 +1,8 @@
 local utils = require('core.utils.utils')
 local Constants = require('core.utils.constants')
 local Functions = require('core.utils.functions')
-local config = require('core.config.config')
+
+
 local market = {}
 
 --- @param position Table|Tuple
@@ -13,16 +14,22 @@ market.build = function(position)
     market.destructible = false
     market.minable = false
 
-    market.add_market_item { price = { { "coin", utils.generate_pickaxe_tier_price(1) } }, offer = {
-        type = 'nothing',
-        effect_description = {'message.pickaxe-upgrade-to-next-tier'}
-    } }
-    market.add_market_item { price = { { "coin", utils.generate_backpack_tier_price(1) } }, offer = {
-        type = 'nothing',
-        effect_description = {'message.backpack-upgrade-to-next-tier'}
-    } }
+    market.add_market_item { 
+        price = { { "coin", utils.generate_pickaxe_tier_price(1) } }, 
+        offer = {
+            type = 'nothing',
+            effect_description = {'message.pickaxe-upgrade-to-next-tier'},
+        } 
+    }
+    market.add_market_item { 
+        price = { { "coin", utils.generate_backpack_tier_price(1) } }, 
+        offer = {
+            type = 'nothing',
+            effect_description = {'message.backpack-upgrade-to-next-tier'}
+        }
+    }
 
-    for _, item in pairs(config.spawn_market_items) do
+    for _, item in pairs(global.config.spawn_market_items) do
         market.add_market_item(item)
     end
 end

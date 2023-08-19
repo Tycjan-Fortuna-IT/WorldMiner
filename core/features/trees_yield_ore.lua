@@ -1,6 +1,3 @@
-local config = require("core.config.config")
-
-
 local trees_yield_ore = {}
 
 --- Get the amount of ore to yield from a tree.

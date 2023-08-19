@@ -1,5 +1,3 @@
-local config = require('core.config.config')
-
 local loot_helper = {}
 
 --- Returns a random loot item list from the loot table.
@@ -9,7 +7,7 @@ loot_helper.get_loot_raffle = function ()
 
     local loot_raffle = {}
 
-    for _, t in pairs(config.loot_item_raffle) do
+    for _, t in pairs(global.config.loot_item_raffle) do
         for x = 1, t.weight, 1 do
             if t.evolution_min <= game.forces.enemy.evolution_factor and t.evolution_max >= game.forces.enemy.evolution_factor then
                 table.insert(loot_raffle, t[1])

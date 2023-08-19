@@ -3,29 +3,29 @@ local filler_helper = require('core.helpers.filler_helper')
 local utils = require('core.utils.utils')
 
 
----@class Variant2x3
+---@class VariantO
 ---@field rooms Room[] Table of rooms.
-local variant2x3 = {}
+local variant_o = {}
 
 --- Initialize the variant dispatcher, initialaze all rooms
 --- @return nil
-variant2x3.on_init = function()
+variant_o.on_init = function()
     -- TODO make it more random i guess (guaranteed_at and dungeon_at is a bit weird)
     -- func - callback function responsible for creating given room
     -- Weight - increasing the weight will increase the chance of the variant being used
     -- Min discovered rooms - minimum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) required for the variant to be available
     -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
     -- Guaranteed at - levels at which the variant is guaranteed to be used
-    variant2x3.rooms = {
-        { func = variant2x3.tons_of_rocks, weight = 5, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { func = variant2x3.tons_of_trees, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
+    variant_o.rooms = {
+        { func = variant_o.tons_of_rocks, weight = 5, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant_o.tons_of_trees, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
     }
 end
 
 --- Initialize the cells of the room
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
-variant2x3.init_cell = function(positions)
+variant_o.init_cell = function(positions)
     for _, position in pairs(positions) do
         local key = utils.coord_to_string({ position.x, position.y })
 
@@ -33,14 +33,14 @@ variant2x3.init_cell = function(positions)
         global.map_cells[key].visited = true
     end
 
-    global.discovered_cells = global.discovered_cells + 6
+    global.discovered_cells = global.discovered_cells + 8
 end
 
 --- Create a room with tons of rocks
 --- @param surface LuaSurface - Surface on which the room will be placed
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
-variant2x3.tons_of_rocks = function(surface, positions)
+variant_o.tons_of_rocks = function(surface, positions)
     for _, position in pairs(positions) do
         local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
@@ -54,7 +54,7 @@ end
 --- @param surface LuaSurface - Surface on which the room will be placed
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
-variant2x3.tons_of_trees = function (surface, positions)
+variant_o.tons_of_trees = function (surface, positions)
     for _, position in pairs(positions) do
         local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
 
@@ -68,9 +68,9 @@ end
 --- @param position table - Left top corner of the first cell for the new room
 --- @param direction defines.direction - Direction in which the room will be placed
 --- @return boolean
-variant2x3.can_expand = function (position, direction)
-    for _, offset in pairs(variant2x3.get_offsets(position, direction)) do
-        if variant2x3.can_expand_offset(offset) then
+variant_o.can_expand = function (position, direction)
+    for _, offset in pairs(variant_o.get_offsets(position, direction)) do
+        if variant_o.can_expand_offset(offset) then
             return true
         end
     end
@@ -81,7 +81,7 @@ end
 --- Check if there is room at given offset that is position of one of the cells of the room.
 --- @param offset table - Offset from the left top corner
 --- @return boolean
-variant2x3.can_expand_offset = function (offset)
+variant_o.can_expand_offset = function (offset)
     for _, offset_pos in pairs(offset) do
         local cell = global.map_cells[utils.coord_to_string({ offset_pos.x, offset_pos.y })]
 
@@ -95,13 +95,13 @@ end
 --- @param position table - Left top corner of the first cell for the new room
 --- @param direction defines.direction - Direction in which the room will be placed
 --- @return table
-variant2x3.get_random_expandable_positions = function (position, direction)
+variant_o.get_random_expandable_positions = function (position, direction)
     local available_positions = {}
     
-    for _, offset in pairs(variant2x3.get_offsets(position, direction)) do
+    for _, offset in pairs(variant_o.get_offsets(position, direction)) do
         local expandable_positions = {}
         for _, offset_pos in pairs(offset) do
-            if variant2x3.can_expand(offset_pos, direction) then
+            if variant_o.can_expand(offset_pos, direction) then
                 table.insert(expandable_positions, offset_pos)
             else
                 expandable_positions = {}
@@ -123,14 +123,14 @@ end
 --- @param position table - Left top corner of the first cell for the new room
 --- @param direction defines.direction - Direction in which the room will be placed
 --- @return table
-variant2x3.get_offsets = function (position, direction)
+variant_o.get_offsets = function (position, direction)
     local offsets = {}
 
     local directions = {
-        [defines.direction.north] = {{{ 0, -1 }, { 1, -1 }, { 1, 0 }, { 2, -1 }, { 2, 0 }}, {{ -1, 0 }, { -1, -1 }, { 0, -1 }, { -2, 0 }, { -2, -1 }}, {{ 1, 0 }, { 0, -1 }, { 1, -1 }, { 0, -2 }, { 1, -2 }}, {{ -1, 0 }, { 0, -1 }, { -1, -1 }, { 0, -2 }, { -1, -2}}},
-        [defines.direction.south] = {{{ 0, 1 }, { 1, 1 }, { 1, 0 }, { 2, 1 }, { 2, 0 }}, {{ 1, 0 }, { 1, 1 }, { 0, 1 }, { 0, 2 }, { 1, 2 }}, {{ -1, 0 }, { -1, 1 }, { 0, 1 }, { -2, 0 }, { -2, 1 }}, {{ -1, 0 }, { 0, 1 }, { -1, 1 }, { 0, 2 }, { -1, 2 }}},
-        [defines.direction.east] = {{{ 1, 0 }, { 1, 1 }, { 0, 1 }, { 1, 2 }, { 0, 2 }}, {{ 0, -1 }, { 1, -1 }, { 1, 0 }, { 0, -2 }, { 1, -2 }}, {{ 0, 1 }, { 1, 1 }, { 1, 0 }, { 2, 1 }, { 2, 0 }}, {{ 0, -1 }, { 1, -1 }, { 1, 0 }, { 2, -1 }, { 2, 0 }}},
-        [defines.direction.west] = {{{ -1, 0 }, { -1, 1 }, { 0, 1 }, { -1, 2 }, { 0, 2 }}, {{ 0, 1 }, { -1, 1 }, { -1, 0 }, { -2, 1 }, { -2, 0 }}, {{ 0, -1 }, { -1, -1 }, { -1, 0 }, { -2, -1 }, { -2, 0 }}, {{ 0, -1 }, { -1, -1 }, { -1, 0 }, { 0, -2}, { -1, -2 }}}
+        [defines.direction.north] = {{{ -1, 0 }, { -1, -1 }, { -1, -2 }, { 0, -2 }, { 1, -2 }, { 1, -1 }, { 1, 0 }}},
+        [defines.direction.south] = {{{ -1, 0 }, { -1, 1 }, { -1, 2 }, { 0, 2 }, { 1, 2 }, { 1, 1 }, { 1, 0 }}},
+        [defines.direction.east] = {{{ 0, -1 }, { 1, -1 }, { 2, -1 }, { 2, 0 }, { 2, 1 }, { 1, 1 }, { 0, 1 }}},
+        [defines.direction.west] = {{{ 0, -1 }, { -1, -1 }, { -2, -1 }, { -2, 0 }, { -2, 1 }, { -1, 1 }, { 0, 1 }}},
     }
 
     if not directions[direction] then
@@ -151,4 +151,4 @@ variant2x3.get_offsets = function (position, direction)
     return offsets
 end
 
-return variant2x3
+return variant_o

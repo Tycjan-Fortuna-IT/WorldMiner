@@ -35,14 +35,16 @@ local config = {
     }
 }
 
-config.on_init = function()
+config.on_init = function ()
+    global.config = config
+
     config.ore_raffle = {}
     config.fluid_raffle = {}
 
     local base_ore_raffle = {
-        { 'iron-ore',    25 },
-        { 'copper-ore',  17 },
-        { 'coal',        13 },
+        { 'iron-ore',    10 },
+        { 'copper-ore',  7 },
+        { 'coal',        5 },
         { 'uranium-ore', 2 },
     }
 

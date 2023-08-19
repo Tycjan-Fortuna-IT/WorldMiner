@@ -3,7 +3,8 @@ local math_random = math.random
 local math_floor = math.floor
 local math_sqrt = math.sqrt
 
-local config = require('core.config.config')
+
+local rocks_yield_ore = {}
 
 local particles = {
     ['iron-ore'] = 'iron-ore-particle',
@@ -19,9 +20,9 @@ local particles = {
     ['angels-ore6'] = 'iron-ore-particle'
 }
 
-local function set_raffle()
+rocks_yield_ore.set_raffle = function ()
     global.rocks_yield_ore['raffle'] = {}
-    for _, t in pairs(config.ore_raffle) do
+    for _, t in pairs(global.config.ore_raffle) do
         for _ = 1, t[2], 1 do
             table.insert(global.rocks_yield_ore['raffle'], t[1])
         end
@@ -29,7 +30,7 @@ local function set_raffle()
     global.rocks_yield_ore['size_of_raffle'] = #global.rocks_yield_ore['raffle']
 end
 
-local function create_particles(surface, name, position, amount, cause_position)
+rocks_yield_ore.create_particles = function (surface, name, position, amount, cause_position)
     local direction_mod = (-100 + math_random(0, 200)) * 0.0004
     local direction_mod_2 = (-100 + math_random(0, 200)) * 0.0004
 
@@ -58,7 +59,7 @@ local function create_particles(surface, name, position, amount, cause_position)
     end
 end
 
-local function get_amount(entity)
+rocks_yield_ore.get_amount = function(entity)
     local distance_to_center = math_floor(math_sqrt(entity.position.x ^ 2 + entity.position.y ^ 2))
 
     local amount = global.rocks_yield_ore_base_amount + (distance_to_center * global.rocks_yield_ore_distance_modifier)
@@ -69,7 +70,7 @@ local function get_amount(entity)
 
     local m = (50 + math_random(0, 60)) * 0.01
 
-    amount = math_floor(amount * config.rock_yield[entity.name] * m)
+    amount = math_floor(amount * global.config.rock_yield[entity.name] * m)
     if amount < 1 then
         amount = 1
     end
@@ -77,12 +78,12 @@ local function get_amount(entity)
     return amount
 end
 
-local function on_player_mined_entity(event)
+rocks_yield_ore.on_player_mined_entity = function(event)
     local entity = event.entity
     if not entity.valid then
         return
     end
-    if not config.rock_yield[entity.name] then
+    if not global.config.rock_yield[entity.name] then
         return
     end
 
@@ -91,7 +92,7 @@ local function on_player_mined_entity(event)
     local ore = global.rocks_yield_ore['raffle'][math_random(1, global.rocks_yield_ore['size_of_raffle'])]
     local player = game.players[event.player_index]
 
-    local count = get_amount(entity)
+    local count = rocks_yield_ore.get_amount(entity)
     count = math_floor(count * (1 + player.force.mining_drill_productivity_bonus))
 
     global.rocks_yield_ore['ores_mined'] = global.rocks_yield_ore['ores_mined'] + count
@@ -111,7 +112,7 @@ local function on_player_mined_entity(event)
         }
     )
 
-    create_particles(player.surface, particles[ore], position, 64, { x = player.position.x, y = player.position.y })
+    rocks_yield_ore.create_particles(player.surface, particles[ore], position, 64, { x = player.position.x, y = player.position.y })
     
     if ore_amount > max_spill then
         player.surface.spill_item_stack(position, { name = ore, count = max_spill }, true)
@@ -138,19 +139,19 @@ local function on_player_mined_entity(event)
     end
 end
 
-local function on_entity_died(event)
+rocks_yield_ore.on_entity_died = function (event)
     local entity = event.entity
     if not entity.valid then
         return
     end
-    if not config.rock_yield[entity.name] then
+    if not global.config.rock_yield[entity.name] then
         return
     end
 
     local surface = entity.surface
     local ore = global.rocks_yield_ore['raffle'][math_random(1, global.rocks_yield_ore['size_of_raffle'])]
     local pos = { entity.position.x, entity.position.y }
-    create_particles(surface, particles[ore], pos, 16, false)
+    rocks_yield_ore.create_particles(surface, particles[ore], pos, 16, false)
 
     if event.cause then
         if event.cause.valid then
@@ -174,12 +175,12 @@ local function on_entity_died(event)
     global.rocks_yield_ore['rocks_broken'] = global.rocks_yield_ore['rocks_broken'] + 1
 end
 
-local function on_init()
+rocks_yield_ore.on_init = function ()
     global.rocks_yield_ore = {}
     global.rocks_yield_ore['rocks_broken'] = 0
     global.rocks_yield_ore['ores_mined'] = 0
 
-    set_raffle()
+    rocks_yield_ore.set_raffle()
 
     if not global.rocks_yield_ore_distance_modifier then
         global.rocks_yield_ore_distance_modifier = settings.startup["rocks-yield-ore-distance-modifier"].value
@@ -192,17 +193,10 @@ local function on_init()
     end
 end
 
-local function on_configuration_changed()
+rocks_yield_ore.on_configuration_changed = function ()
     global.rocks_yield_ore_distance_modifier = settings.startup["rocks-yield-ore-distance-modifier"].value
     global.rocks_yield_ore_base_amount = settings.startup["rocks-yield-ore-base-amount"].value
     global.rocks_yield_ore_maximum_amount = settings.startup["rocks-yield-ore-maximum-amount"].value
 end
-
-local rocks_yield_ore = {
-    on_init = on_init,
-    on_configuration_changed = on_configuration_changed,
-    on_player_mined_entity = on_player_mined_entity,
-    on_entity_died = on_entity_died
-}
 
 return rocks_yield_ore

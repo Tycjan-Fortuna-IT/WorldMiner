@@ -1,5 +1,6 @@
-require ('prototypes.item.blue-coin')
-require ('prototypes.item.blue-crystal')
-require ('prototypes.entity.baner')
-require ('prototypes.building.crystal-extractor')
-require ('prototypes.building.dungeon-entrance')
+-- _____________________________________________________________________________________________
+-- This file was automatically generated Tue Aug 15 2023 17:42:35 UTC by FactorioLuaHelper.
+-- _____________________________________________________________________________________________
+
+require ('prototypes.items')
+require ('prototypes.entities')
