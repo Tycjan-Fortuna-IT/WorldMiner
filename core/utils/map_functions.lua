@@ -204,7 +204,9 @@ f.draw_mixed_ore_patch = function(position, surface, radius, richness)
     local ores = {}
 
     for _, ore in ipairs(global.config.ore_raffle) do
-        table.insert(ores, ore[1])
+        if ore[1] ~= 'uranium-ore' then
+            table.insert(ores, ore[1])
+        end
     end
 
     for y = radius * -3, radius * 3, 1 do
@@ -212,7 +214,7 @@ f.draw_mixed_ore_patch = function(position, surface, radius, richness)
             local pos = {x = x + position.x, y = y + position.y}
             local noise = simplex_noise(pos.x * modifier_2, pos.y * modifier_2, seed) + simplex_noise(pos.x * modifier_3, pos.y * modifier_3, seed) * modifier_4
             local distance_to_center = math.sqrt(x ^ 2 + y ^ 2)
-            local ore = ores[(math.ceil(noise * modifier_1) % 4) + 1]
+            local ore = ores[(math.ceil(noise * modifier_1) % #ores) + 1]
             local amount = richness - richness_part * distance_to_center
             if amount > 1 then
                 if surface.can_place_entity({name = ore, position = pos, amount = amount}) then
@@ -242,7 +244,7 @@ f.draw_oil_circle = function(position, name, surface, radius, richness)
     local count = 0
     local max_count = 0
 
-    while count < radius and max_count < 100000 do
+    while count < radius and max_count < 1000 do
         for y = radius * -1, radius, 1 do
             for x = radius * -1, radius, 1 do
                 if math.random(1, 200) == 1 then

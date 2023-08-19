@@ -33,7 +33,7 @@ variant1x1.on_init = function()
         { func = variant1x1.mixed_ore_deposit, weight = 1,  min_discovered_rooms = 0,   max_discovered_rooms = 50, guaranteed_at = { 5, 7 } },
         { func = variant1x1.ore_deposit,       weight = 6,  min_discovered_rooms = 10,  max_discovered_rooms = 0, guaranteed_at = { 11 } },
         { func = variant1x1.nests,             weight = 4,  min_discovered_rooms = 10,  max_discovered_rooms = 0, guaranteed_at = { 12 } },
-        { func = variant1x1.oil,               weight = 1,  min_discovered_rooms = 25,  max_discovered_rooms = 0, guaranteed_at = { 37 } },
+        { func = variant1x1.oil,               weight = 1,  min_discovered_rooms = 25,  max_discovered_rooms = 0, guaranteed_at = { 37, 55, 78 } },
     }
 end
 

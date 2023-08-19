@@ -64,7 +64,7 @@ dispatcher.on_load = function ()
         { name = 'O', variant = roomsO, weight = 2, min_discovered_rooms = 54, max_discovered_rooms = 0, guaranteed_at = { 55 } },
         { name = 'L', variant = roomsL, weight = 2, min_discovered_rooms = 59, max_discovered_rooms = 0, guaranteed_at = { 60 } },
         { name = 'T', variant = roomsT, weight = 2, min_discovered_rooms = 64, max_discovered_rooms = 0, guaranteed_at = { 65 } },
-        { name = 'dungeon', variant = variant_dungeon, weight = 1, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
+        -- { name = 'dungeon', variant = variant_dungeon, weight = 1, min_discovered_rooms = 50, max_discovered_rooms = 0, guaranteed_at = { 51 } },
     }
 end
 
