@@ -17,7 +17,8 @@ variant2x3.on_init = function()
     -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
     -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant2x3.rooms = {
-        { func = variant2x3.tons_of_rocks, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant2x3.tons_of_rocks, weight = 5, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant2x3.tons_of_trees, weight = 1, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
     }
 end
 
@@ -46,6 +47,20 @@ variant2x3.tons_of_rocks = function(surface, positions)
         filler_helper.fill_with_base_tile(surface, left_top)
 
         map_functions.draw_spreaded_rocks_around(left_top, surface, true)
+    end
+end
+
+--- Create a room with tons of trees
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant2x3.tons_of_trees = function (surface, positions)
+    for _, position in pairs(positions) do
+        local left_top = { x = position.x * global.config.grid_size, y = position.y * global.config.grid_size }
+
+        filler_helper.fill_with_base_tile(surface, left_top)
+
+        map_functions.draw_spreaded_trees_around(position, surface, true)
     end
 end
 

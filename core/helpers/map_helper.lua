@@ -80,6 +80,7 @@ map_helper.on_configuration_changed = function ()
 
     variant_dispatcher.on_init()
     rocks_yield_ore.on_configuration_changed()
+    gui.refresh()
 end
 
 map_helper.on_player_mined_entity = function (event)

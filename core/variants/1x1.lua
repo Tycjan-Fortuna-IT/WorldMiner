@@ -27,12 +27,13 @@ variant1x1.on_init = function()
     -- Max discovered rooms - maximum number of TOTAL discovered rooms OF GIVEN VARIANT(not total of all variants) allowed for the variant to be available or 0 for unlimited
     -- Guaranteed at - levels at which the variant is guaranteed to be used
     variant1x1.rooms = {
-        { func = variant1x1.tons_of_rocks, weight = 50, min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 1 } },
-        { func = variant1x1.tons_of_trees, weight = 14,  min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 2 } },
-        { func = variant1x1.pond,          weight = 9,   min_discovered_rooms = 0,  max_discovered_rooms = 0, guaranteed_at = { 3 } },
-        { func = variant1x1.ore_deposit,   weight = 6,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 11 } },
-        { func = variant1x1.nests,         weight = 4,   min_discovered_rooms = 10, max_discovered_rooms = 0, guaranteed_at = { 12 } },
-        { func = variant1x1.oil,           weight = 4,   min_discovered_rooms = 15, max_discovered_rooms = 0, guaranteed_at = { 16, 25, 37, 50 } },
+        { func = variant1x1.tons_of_rocks,     weight = 1, min_discovered_rooms = 0,   max_discovered_rooms = 0, guaranteed_at = { 1 } },
+        { func = variant1x1.tons_of_trees,     weight = 14, min_discovered_rooms = 0,   max_discovered_rooms = 0, guaranteed_at = { 2 } },
+        { func = variant1x1.pond,              weight = 9,  min_discovered_rooms = 0,   max_discovered_rooms = 0, guaranteed_at = { 3 } },
+        { func = variant1x1.mixed_ore_deposit, weight = 1,  min_discovered_rooms = 0,   max_discovered_rooms = 50, guaranteed_at = { 5, 7 } },
+        { func = variant1x1.ore_deposit,       weight = 6,  min_discovered_rooms = 10,  max_discovered_rooms = 0, guaranteed_at = { 11 } },
+        { func = variant1x1.nests,             weight = 4,  min_discovered_rooms = 10,  max_discovered_rooms = 0, guaranteed_at = { 12 } },
+        { func = variant1x1.oil,               weight = 1,  min_discovered_rooms = 25,  max_discovered_rooms = 0, guaranteed_at = { 37 } },
     }
 end
 
@@ -78,7 +79,6 @@ end
 --- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
 --- @return nil
 variant1x1.oil = function(surface, positions)
-    local num_of_oils = 3 + math.floor(global.discovered_cells / 100)
     local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
 
     local fluids = utils.select_fluids_not_yet_placed(global.config.fluid_raffle)
@@ -95,28 +95,12 @@ variant1x1.oil = function(surface, positions)
 
     filler_helper.fill_with_base_tile(surface, left_top)
 
-    local square_size = 9
+    local center = {
+        x = left_top.x + global.config.grid_size * 0.5,
+        y = left_top.y + global.config.grid_size * 0.5
+    }
 
-    for i = 1, num_of_oils do
-        local center_x = left_top.x + global.config.grid_size * 0.5
-        local center_y = left_top.y + global.config.grid_size * 0.5
-
-        local corner_positions = {
-            { x = center_x - square_size / 2, y = center_y - square_size / 2 },
-            { x = center_x + square_size / 2, y = center_y - square_size / 2 },
-            { x = center_x - square_size / 2, y = center_y + square_size / 2 },
-            { x = center_x + square_size / 2, y = center_y + square_size / 2 }
-        }
-
-        for _, corner_position in ipairs(corner_positions) do
-            surface.create_entity({
-                name = fluid and fluid.name or 'crude-oil',
-                position = corner_position,
-                amount = 10000 + global.discovered_cells * 400 * (fluid and fluid.scale or 100)
-            })
-        end
-    end
-
+    map_functions.draw_oil_circle(center, fluid and fluid.name or 'crude-oil', surface, 16, 10000 + global.discovered_cells * 350 * (fluid and fluid.scale or 100))
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
     map_functions.draw_spreaded_trees_around(positions[1], surface, false)
 end
@@ -144,6 +128,21 @@ variant1x1.ore_deposit = function(surface, positions)
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
     map_functions.draw_spreaded_trees_around(positions[1], surface, false)
+end
+
+--- Create a room with a rainbow patch
+--- @param surface LuaSurface - Surface on which the room will be placed
+--- @param positions table - Table of positions as a coords of left top corner of the chunk (room)
+--- @return nil
+variant1x1.mixed_ore_deposit = function (surface, positions)
+    local left_top = { x = positions[1].x * global.config.grid_size, y = positions[1].y * global.config.grid_size }
+
+    filler_helper.fill_with_base_tile(surface, left_top)
+
+    local center = { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }
+    local radius = global.config.grid_size * 0.4
+
+    map_functions.draw_mixed_ore_patch(center, surface, radius, 3000)
 end
 
 --- Create a room with a pond
