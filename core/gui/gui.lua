@@ -11,6 +11,14 @@ local gui = {}
 --- @param player LuaPlayer
 --- @return LuaGuiElement, LuaGuiElement The main frame and the inside table.
 gui.create = function(player)
+    if player.gui.top['caver_miner_stats_toggle_button'] then
+        player.gui.top['caver_miner_stats_toggle_button'].destroy()
+    end
+
+    if player.gui.top['caver_miner_stats_frame'] then
+        player.gui.top['caver_miner_stats_frame'].destroy()
+    end
+
     if (player.gui.screen['world_miner_gui']) then
         player.gui.screen['world_miner_gui'].destroy()
     end
