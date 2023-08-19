@@ -28,9 +28,11 @@ stats_panel.draw = function (panel_frame, player)
 
     local string = ''
     for name, variant in pairs(global.variants) do
-        if name == 'dungeon' then break end
+        if name == 'dungeon' then goto continue end
 
         string = string .. 'Variant ' .. name .. ': ' .. (variant.discovered_rooms - 1 or 0) .. ',    '
+
+        ::continue::
     end
 
     gui_helper
