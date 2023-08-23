@@ -62,4 +62,22 @@ data:extend{
         default_value = true,
         order = "g"
     },
+    {
+        type = "double-setting",
+        name = "ore-richness-multiplier",
+        setting_type = "runtime-global",
+        minimum_value = 0.01,
+        maximum_value = 100,
+        default_value = 1,
+        order = "h",
+    },
+    {
+        type = "double-setting",
+        name = "oil-richness-multiplier",
+        setting_type = "runtime-global",
+        minimum_value = 0.01,
+        maximum_value = 100,
+        default_value = 1,
+        order = "h",
+    },
 }

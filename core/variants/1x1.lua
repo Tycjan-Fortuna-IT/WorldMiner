@@ -100,7 +100,9 @@ variant1x1.oil = function(surface, positions)
         y = left_top.y + global.config.grid_size * 0.5
     }
 
-    map_functions.draw_oil_circle(center, fluid and fluid.name or 'crude-oil', surface, 16, 10000 + global.discovered_cells * 350 * (fluid and fluid.scale or 100))
+    local richness_modifier = settings.global["oil-richness-multiplier"].value or 1
+
+    map_functions.draw_oil_circle(center, fluid and fluid.name or 'crude-oil', surface, 16, 10000 + global.discovered_cells * 350 * (fluid and fluid.scale or 100) * richness_modifier)
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
     map_functions.draw_spreaded_trees_around(positions[1], surface, false)
 end
@@ -122,9 +124,11 @@ variant1x1.ore_deposit = function(surface, positions)
     local max_distance = math.sqrt((global.config.grid_size * 0.5) ^ 2 + (global.config.grid_size * 0.5) ^ 2)
     local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
+    local richness_modifier = settings.global["ore-richness-multiplier"].value or 1
+
     map_functions.draw_irregular_noise_ore_deposit(
         { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }, ore_name, surface,
-        global.config.grid_size * 0.3, 1968 * scaling_factor, 0.2, 0.1)
+        global.config.grid_size * 0.3, 1968 * scaling_factor * richness_modifier, 0.2, 0.1)
 
     map_functions.draw_spreaded_rocks_around(left_top, surface, false)
     map_functions.draw_spreaded_trees_around(positions[1], surface, false)
@@ -142,7 +146,7 @@ variant1x1.mixed_ore_deposit = function (surface, positions)
     local center = { x = left_top.x + global.config.grid_size * 0.5, y = left_top.y + global.config.grid_size * 0.5 }
     local radius = global.config.grid_size * 0.4
 
-    map_functions.draw_mixed_ore_patch(center, surface, radius, 3000)
+    map_functions.draw_mixed_ore_patch(center, surface, radius, 500)
 end
 
 --- Create a room with a pond

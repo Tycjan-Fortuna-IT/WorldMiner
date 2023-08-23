@@ -130,7 +130,9 @@ variant1x3.ore_deposit_with_enemies = function (surface, positions)
     local max_distance = math.sqrt((global.config.grid_size * 0.5) ^ 2 + (global.config.grid_size * 0.5) ^ 2)
     local scaling_factor = math.exp(distance_to_center / (max_distance * 30)) * 13
 
-    map_functions.draw_irregular_noise_ore_deposit(center, ore_name, surface, radius * 2, 1968 * scaling_factor, 0.2, 0.1)
+    local richness_modifier = settings.global["ore-richness-multiplier"].value or 1
+    
+    map_functions.draw_irregular_noise_ore_deposit(center, ore_name, surface, radius * 2, 1968 * scaling_factor * richness_modifier, 0.2, 0.1)
 end
 
 --- Check if available room can be placed at a given direction.
